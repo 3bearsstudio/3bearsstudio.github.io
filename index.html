@@ -87,7 +87,7 @@ body{
 }
 a{color:var(--kicker)}
 a:focus-visible,button:focus-visible{outline:2px solid var(--aurora2);outline-offset:3px}
-.wrap{width:100%;max-width:1080px;margin:0 auto;padding:0 28px}
+.wrap{width:100%;max-width:1220px;margin:0 auto;padding:0 28px}
 .serif{font-family:var(--display)}
 .skip{position:absolute;left:-9999px}
 .skip:focus{left:12px;top:12px;z-index:99;background:#fff;padding:10px 16px;border-radius:8px}
@@ -171,12 +171,20 @@ h1 .g{background:linear-gradient(100deg,var(--aurora),var(--foam),var(--aurora2)
 
 /* ─────────── SECTIONS ─────────── */
 main{position:relative}
-section{padding:74px 0}
+/* Vertical rhythm is deliberately UNEVEN. Equal padding on every section is the
+   other half of the "tidy template" read — the reference sites give some sections
+   air and compress others. */
+section{padding:88px 0}
+section#name{padding:150px 0}
 section.alt{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.sec-head{display:grid;grid-template-columns:150px minmax(0,1fr);gap:28px;margin-bottom:38px}
+
+.sec-head{display:grid;grid-template-columns:190px minmax(0,1fr);gap:30px;margin-bottom:46px}
 .sec-num{font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--kicker);
-  padding-top:9px;display:flex;align-items:baseline;gap:9px}
-.sec-num i{font-style:normal;opacity:.55}
+  padding-top:16px;display:flex;align-items:baseline;gap:9px;position:relative}
+/* The numeral becomes a large ghost sitting in the left margin — an editorial
+   device that gives the section a masthead instead of a caption. */
+.sec-num i{font-style:normal;font-family:var(--display);font-size:76px;line-height:.7;
+  opacity:.09;color:var(--arctic);position:absolute;left:-6px;top:-6px;letter-spacing:-.04em}
 .sec-num::after{content:"";flex:1;height:1px;background:var(--line);margin-top:6px}
 h2{font-family:var(--display);font-size:clamp(30px,5vw,58px);
   margin:0 0 14px;color:var(--arctic);line-height:1.02;letter-spacing:-.025em}
@@ -231,6 +239,20 @@ section.alt .app{background:var(--snow)}
 .feature.reverse{grid-template-columns:minmax(0,1.25fr) minmax(0,0.85fr)}
 .feature.reverse .feature-copy{order:2}
 .feature.reverse .shots{order:1}
+
+/* BREAK THE CONTAINER. The fans run past .wrap toward the viewport edge, in
+   opposite directions — the thing that stops the page reading as a stack of boxes.
+   Done with translate, NOT a negative margin: a negative margin on a grid item
+   shrinks its outer size, so the track algorithm hands it MORE space, which grows
+   the item, which pulls further — the first attempt overshot the viewport by
+   229px. translate moves it without touching layout at all, so the bleed is
+   exactly the distance asked for.
+   The clamp scales the pull with the gutter but caps it, so a 2560px monitor does
+   not fling the devices into the far margin. */
+@media (min-width:901px){
+  .feature .shots{transform:translateX(clamp(0px,calc(50vw - 50% - 34px),150px))}
+  .feature.reverse .shots{transform:translateX(clamp(-150px,calc(50% - 50vw + 34px),0px))}
+}
 .feature-copy h3{font-family:var(--display);font-size:clamp(23px,2.9vw,29px);margin:0;color:var(--arctic)}
 .feature-copy p{margin:0 0 16px;color:var(--muted);font-size:16.5px;max-width:46ch}
 .feature-copy .pills{margin-bottom:18px}
