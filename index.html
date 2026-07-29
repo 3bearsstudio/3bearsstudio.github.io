@@ -171,10 +171,34 @@ h1 .g{background:linear-gradient(100deg,var(--aurora),var(--foam),var(--aurora2)
 
 /* ─────────── SECTIONS ─────────── */
 main{position:relative}
+
+/* ─── the reel: a full-bleed band of every app screen, drifting on scroll ───
+   Edge to edge at EVERY size, phones included. The earlier grid work was gated at
+   901px and so did nothing on a phone — which is precisely why that pass did not
+   read on mobile. This one has no such gate. */
+.reel{padding:0;overflow:hidden;background:var(--snow);border-bottom:1px solid var(--line)}
+.reel-track{display:flex;gap:16px;width:max-content;padding:46px 0 54px;will-change:transform}
+.rphone{margin:0;flex:none;width:158px;border-radius:22px;padding:4px;
+  transform:translateY(var(--lift,0px));
+  background:linear-gradient(155deg,#36435c,#111a27 62%);
+  box-shadow:0 14px 30px rgba(16,32,52,.20),0 2px 5px rgba(16,32,52,.12)}
+.rphone img{display:block;width:100%;height:auto;border-radius:18px}
+@media (max-width:700px){
+  .reel-track{gap:11px;padding:32px 0 38px}
+  .rphone{width:114px;border-radius:18px}
+  .rphone img{border-radius:15px}
+}
+
 /* Vertical rhythm is deliberately UNEVEN. Equal padding on every section is the
    other half of the "tidy template" read — the reference sites give some sections
    air and compress others. */
-section{padding:88px 0}
+/* `clip` rather than `hidden`: it clips without creating a scroll container, and
+   unlike `hidden` it does not force the other axis to `auto`. Sections span the
+   full viewport, so the deliberate bleed still runs to the screen edge — it just
+   cannot run PAST it. Without this the rotated outer phones pushed the document
+   12px wider, which then made the fixed grain layer size to the wider document
+   and the whole page scrolled sideways. */
+section{padding:88px 0;overflow-x:clip}
 section#name{padding:150px 0}
 section.alt{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 
@@ -183,8 +207,9 @@ section.alt{background:var(--paper);border-top:1px solid var(--line);border-bott
   padding-top:16px;display:flex;align-items:baseline;gap:9px;position:relative}
 /* The numeral becomes a large ghost sitting in the left margin — an editorial
    device that gives the section a masthead instead of a caption. */
-.sec-num i{font-style:normal;font-family:var(--display);font-size:76px;line-height:.7;
-  opacity:.09;color:var(--arctic);position:absolute;left:-6px;top:-6px;letter-spacing:-.04em}
+.sec-num i{font-style:normal;font-family:var(--display);font-size:clamp(64px,9vw,104px);
+  line-height:.7;opacity:.17;color:var(--arctic);position:absolute;left:-8px;top:-14px;
+  letter-spacing:-.04em}
 .sec-num::after{content:"";flex:1;height:1px;background:var(--line);margin-top:6px}
 h2{font-family:var(--display);font-size:clamp(30px,5vw,58px);
   margin:0 0 14px;color:var(--arctic);line-height:1.02;letter-spacing:-.025em}
@@ -366,7 +391,7 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
    noise layer over everything gives the dark ground a surface. Generated with SVG
    feTurbulence as a data URI — no image request, ~700 bytes, and it tiles.
    `overlay` keeps it subtle on light sections and visible on dark ones. */
-.grain{position:fixed;inset:0;z-index:45;pointer-events:none;opacity:.14;
+.grain{position:fixed;inset:0;z-index:45;pointer-events:none;opacity:.26;
   mix-blend-mode:overlay;background-repeat:repeat;background-size:170px 170px;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='170' height='170'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 @media (prefers-reduced-motion:reduce){.grain{opacity:.1}}
@@ -664,6 +689,36 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
 </header>
 
 <main id="main">
+
+<section class="reel" aria-label="Screens from our apps">
+  <div class="reel-track" data-reel>
+        <figure class="rphone" style="--lift:0px"><img src="assets/shots/kove/00-onboarding-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+        <figure class="rphone" style="--lift:14px"><img src="assets/shots/kove/01-focus-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+        <figure class="rphone" style="--lift:28px"><img src="assets/shots/kove/02-habits-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+        <figure class="rphone" style="--lift:0px"><img src="assets/shots/kove/03-blocks-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+        <figure class="rphone" style="--lift:14px"><img src="assets/shots/kove/04-session-picker-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+        <figure class="rphone" style="--lift:28px"><img src="assets/shots/kove/05-breathing-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+        <figure class="rphone" style="--lift:0px"><img src="assets/shots/kove/06-achievements-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+        <figure class="rphone" style="--lift:14px"><img src="assets/shots/sail-suitely/01-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+        <figure class="rphone" style="--lift:28px"><img src="assets/shots/sail-suitely/02-guide-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+        <figure class="rphone" style="--lift:0px"><img src="assets/shots/sail-suitely/03-search-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+        <figure class="rphone" style="--lift:14px"><img src="assets/shots/sail-suitely/04-price-history-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+        <figure class="rphone" style="--lift:28px"><img src="assets/shots/sail-suitely/05-detail-itinerary-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+
+        <figure class="rphone" style="--lift:0px"><img src="assets/shots/kove/00-onboarding-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+        <figure class="rphone" style="--lift:14px"><img src="assets/shots/kove/01-focus-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+        <figure class="rphone" style="--lift:28px"><img src="assets/shots/kove/02-habits-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+        <figure class="rphone" style="--lift:0px"><img src="assets/shots/kove/03-blocks-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+        <figure class="rphone" style="--lift:14px"><img src="assets/shots/kove/04-session-picker-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+        <figure class="rphone" style="--lift:28px"><img src="assets/shots/kove/05-breathing-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+        <figure class="rphone" style="--lift:0px"><img src="assets/shots/kove/06-achievements-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+        <figure class="rphone" style="--lift:14px"><img src="assets/shots/sail-suitely/01-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+        <figure class="rphone" style="--lift:28px"><img src="assets/shots/sail-suitely/02-guide-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+        <figure class="rphone" style="--lift:0px"><img src="assets/shots/sail-suitely/03-search-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+        <figure class="rphone" style="--lift:14px"><img src="assets/shots/sail-suitely/04-price-history-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+        <figure class="rphone" style="--lift:28px"><img src="assets/shots/sail-suitely/05-detail-itinerary-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+  </div>
+</section>
 
   <!-- 01 WORK -->
   <section id="work">
@@ -1073,6 +1128,23 @@ import { animate, stagger, onScroll } from './vendor/anime.esm.min.js';
 
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 const fans = document.querySelectorAll('.shots');
+
+// The reel drifts sideways as the band passes through the viewport. It is the one
+// piece of motion that is full-bleed and ungated by breakpoint, so it reads the
+// same on a phone as on a monitor.
+const reel = document.querySelector('[data-reel]');
+if (!reduced.matches && reel) {
+  animate(reel, {
+    translateX: ['3%', '-34%'],
+    ease: 'linear',
+    autoplay: onScroll({
+      target: reel.parentElement,
+      enter: 'bottom top',
+      leave: 'top bottom',
+      sync: 0.3,
+    }),
+  });
+}
 
 if (!reduced.matches && fans.length) {
   document.documentElement.classList.add('js-anime');
