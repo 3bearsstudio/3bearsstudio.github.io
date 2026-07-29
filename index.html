@@ -457,14 +457,21 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
   .plate dt{padding-bottom:0;border-top:1px solid rgba(207,234,245,.14)}
   .plate dd{padding-top:4px;border-top:0}
 }
-/* On a phone, a three-up fan puts each device at roughly 150px — too small to read
-   the app UI at ANY source resolution, which is the actual cause of "still blurry"
-   on mobile. Show one device instead, near full width, and let it be legible. */
+/* The three-up fan stays on phones — it is the point of the section. To buy it as
+   much room as possible, let the fan break out of .wrap's side padding and use the
+   full viewport width, which is worth roughly 11% on each device.
+   (Briefly replaced by a single large phone here. That was a misread of feedback:
+   the ask was to make this fan match the other one's SIZE, not to drop to one
+   device. Do not "simplify" it back.) */
 @media (max-width:700px){
-  .shots .phone:nth-child(1),
-  .shots .phone:nth-child(3){display:none}
-  .shots .phone:nth-child(2){width:74%;margin:0;--ty:0px;--tx:0px;--rot:0deg}
-  .shots:hover .phone{--open:1}
+  .shots{margin-left:-20px;margin-right:-20px}
+  /* Sized so the OUTER phones fit once rotated. A 6deg tilt makes a device's
+     bounding box ~17px wider than its layout box on a phone-width screen, so
+     laying out to exactly 100% pushes the corners well off-screen where
+     overflow-x:hidden chops them. These numbers leave a few px of deliberate
+     bleed instead of a visible chop. */
+  .phone{width:36%}
+  .phone:nth-child(2){margin:0 -6.5%}
 }
 
 @media (max-width:560px){
@@ -627,15 +634,15 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
         <a class="shots" href="https://3bears.studio/kove/" aria-label="Visit the Kove site">
           <figure class="phone"><img src="assets/shots/kove/02-habits-1206.webp"
             srcset="assets/shots/kove/02-habits-720.webp 720w, assets/shots/kove/02-habits-1206.webp 1206w"
-            sizes="(max-width:700px) 74vw, (max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
+            sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
             alt="Kove's habit list, showing streaks of 50, 58 and 61 days with a week-at-a-glance strip under each one." /></figure>
           <figure class="phone"><img src="assets/shots/kove/01-focus-home-1206.webp"
             srcset="assets/shots/kove/01-focus-home-720.webp 720w, assets/shots/kove/01-focus-home-1206.webp 1206w"
-            sizes="(max-width:700px) 74vw, (max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
+            sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
             alt="Kove's home screen: a filled focus ring reading 60 minutes, two sessions, and a two-day streak." /></figure>
           <figure class="phone"><img src="assets/shots/kove/03-blocks-1206.webp"
             srcset="assets/shots/kove/03-blocks-720.webp 720w, assets/shots/kove/03-blocks-1206.webp 1206w"
-            sizes="(max-width:700px) 74vw, (max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
+            sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
             alt="Kove's blocks screen, with a Deep Work block active and shown as blocking now." /></figure>
         </a>
       </article>
@@ -656,15 +663,15 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
         <a class="shots" href="https://3bears.studio/sail-suitely/" aria-label="Visit the Sail Suitely site">
           <figure class="phone"><img src="assets/shots/sail-suitely/02-guide-1206.webp"
             srcset="assets/shots/sail-suitely/02-guide-720.webp 720w, assets/shots/sail-suitely/02-guide-1206.webp 1206w"
-            sizes="(max-width:700px) 74vw, (max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
+            sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
             alt="Sail Suitely's north star guide, a night-sky screen grouping cruise lines into tiers." /></figure>
           <figure class="phone"><img src="assets/shots/sail-suitely/01-home-1206.webp"
             srcset="assets/shots/sail-suitely/01-home-720.webp 720w, assets/shots/sail-suitely/01-home-1206.webp 1206w"
-            sizes="(max-width:700px) 74vw, (max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
+            sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
             alt="Sail Suitely's home screen, with a featured sailing and a grid of ship-within-a-ship enclaves." /></figure>
           <figure class="phone"><img src="assets/shots/sail-suitely/04-price-history-1206.webp"
             srcset="assets/shots/sail-suitely/04-price-history-720.webp 720w, assets/shots/sail-suitely/04-price-history-1206.webp 1206w"
-            sizes="(max-width:700px) 74vw, (max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
+            sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
             alt="A sailing's fare breakdown with a price-history chart tracking the suite fare over time." /></figure>
         </a>
       </article>
