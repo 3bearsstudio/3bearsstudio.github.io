@@ -126,7 +126,12 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--aurora2);outline-of
 .nav a{color:rgba(245,248,252,.82);text-decoration:none;font-size:13.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
 .nav a:hover{color:var(--aurora)}
 
-.hero-in{position:relative;z-index:2;padding:64px 0 118px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:56px;align-items:start}
+/* The headline is the page. It gets the full column and as much size as the
+   viewport will carry — a 54px cap was the single biggest thing making this read
+   as a tidy template rather than a designed page. */
+.hero-in{position:relative;z-index:2;padding:56px 0 104px;display:block}
+.hero-foot{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:40px;align-items:end;
+  margin-top:34px}
 .kicker{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(143,216,234,.35);
   border-radius:999px;padding:6px 14px;font-size:12px;font-weight:700;letter-spacing:.1em;
   text-transform:uppercase;color:#cfeaf5;background:rgba(143,216,234,.08)}
@@ -135,7 +140,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--aurora2);outline-of
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 @keyframes ring{0%{box-shadow:0 0 0 0 rgba(127,227,196,.5)}70%,100%{box-shadow:0 0 0 10px rgba(127,227,196,0)}}
 h1{font-family:var(--display);font-weight:600;
-  font-size:clamp(32px,5.1vw,54px);line-height:1.1;margin:20px 0 18px;max-width:17ch;letter-spacing:-.01em}
+  font-size:clamp(44px,10.2vw,128px);line-height:.94;margin:26px 0 0;max-width:none;
+  letter-spacing:-.035em;text-wrap:balance}
 h1 .g{background:linear-gradient(100deg,var(--aurora),var(--foam),var(--aurora2),var(--aurora));
   background-size:280% 100%;animation:sheen 14s ease-in-out infinite;
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-style:italic}
@@ -153,10 +159,12 @@ h1 .g{background:linear-gradient(100deg,var(--aurora),var(--foam),var(--aurora2)
 .btn-s:hover{background:rgba(207,234,245,.1)}
 .btn .ar{transition:transform .18s}.btn:hover .ar{transform:translateX(3px)}
 
-/* hero facts — the reviewer-facing summary, above the fold */
-.facts-lite{border-left:1px solid rgba(207,234,245,.22);padding-left:22px;margin-top:8px}
-.facts-lite dt{font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--aurora);margin-bottom:5px}
-.facts-lite dd{margin:0 0 20px;font-size:14.5px;color:rgba(245,248,252,.88);line-height:1.5}
+/* hero facts — now a rule-separated strip under the headline rather than a
+   sidebar, so nothing competes with the type for horizontal space */
+.facts-lite{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:34px;
+  margin:62px 0 0;padding-top:26px;border-top:1px solid rgba(207,234,245,.2)}
+.facts-lite dt{font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--aurora);margin-bottom:6px}
+.facts-lite dd{margin:0;font-size:14.5px;color:rgba(245,248,252,.88);line-height:1.5}
 .facts-lite dd small{display:block;color:rgba(245,248,252,.62);font-size:13px}
 
 .drift{position:absolute;left:0;right:0;bottom:-1px;z-index:2;pointer-events:none;display:block;width:100%}
@@ -170,8 +178,8 @@ section.alt{background:var(--paper);border-top:1px solid var(--line);border-bott
   padding-top:9px;display:flex;align-items:baseline;gap:9px}
 .sec-num i{font-style:normal;opacity:.55}
 .sec-num::after{content:"";flex:1;height:1px;background:var(--line);margin-top:6px}
-h2{font-family:var(--display);font-size:clamp(24px,3.3vw,34px);
-  margin:0 0 10px;color:var(--arctic);line-height:1.2}
+h2{font-family:var(--display);font-size:clamp(30px,5vw,58px);
+  margin:0 0 14px;color:var(--arctic);line-height:1.02;letter-spacing:-.025em}
 .sec-head p{margin:0;color:var(--muted);max-width:56ch;font-size:16.5px}
 
 /* products */
@@ -315,6 +323,16 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
    Everything below is decorative. Each piece either degrades to a static page
    with JS off, or is switched off entirely by prefers-reduced-motion. */
 
+/* ─── film grain ───
+   A flat CSS gradient is the tell that separates "nice" from "designed"; a fine
+   noise layer over everything gives the dark ground a surface. Generated with SVG
+   feTurbulence as a data URI — no image request, ~700 bytes, and it tiles.
+   `overlay` keeps it subtle on light sections and visible on dark ones. */
+.grain{position:fixed;inset:0;z-index:45;pointer-events:none;opacity:.14;
+  mix-blend-mode:overlay;background-repeat:repeat;background-size:170px 170px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='170' height='170'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+@media (prefers-reduced-motion:reduce){.grain{opacity:.1}}
+
 /* scroll progress rail */
 .progress{position:fixed;top:0;left:0;height:3px;width:100%;z-index:60;pointer-events:none;
   transform:scaleX(0);transform-origin:0 50%;
@@ -438,8 +456,9 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
   .apps{grid-template-columns:repeat(2,1fr)}
 }
 @media (max-width:900px){
-  .hero-in{grid-template-columns:1fr;gap:34px;padding:52px 0 100px}
-  .facts-lite{border-left:0;border-top:1px solid rgba(207,234,245,.22);padding-left:0;padding-top:22px}
+  .hero-in{padding:44px 0 88px}
+  .hero-foot{grid-template-columns:1fr;gap:24px;align-items:start}
+  .facts-lite{grid-template-columns:1fr;gap:20px;margin-top:44px}
   .sec-head,figure.story{grid-template-columns:1fr;gap:14px}
   .sec-num::after{display:none}
   .apps,.svc{grid-template-columns:1fr}
@@ -518,6 +537,7 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
 <body>
 <a class="skip" href="#main">Skip to content</a>
 
+<div class="grain" aria-hidden="true"></div>
 <div class="progress" id="prog" aria-hidden="true"></div>
 
 <div class="minibar" id="minibar" aria-hidden="true">
@@ -570,11 +590,13 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
 
   <div class="wrap">
     <div class="hero-in">
-      <div>
-        <span class="kicker"><span class="dot"></span>Independent app studio</span>
-        <h1><span class="w"><span>We</span></span> <span class="w"><span>build</span></span>
-          <span class="w"><span class="g">calm,&nbsp;private</span></span>
-          <span class="w"><span>apps.</span></span></h1>
+      <span class="kicker"><span class="dot"></span>Independent app studio</span>
+
+      <h1><span class="w"><span>We</span></span> <span class="w"><span>build</span></span>
+        <span class="w"><span class="g">calm,&nbsp;private</span></span>
+        <span class="w"><span>apps.</span></span></h1>
+
+      <div class="hero-foot">
         <p class="lead">3 Bears Studio is a two-person studio making software for iPhone, Android and Mac.
           We would rather make a few things carefully than many things quickly.</p>
         <div class="cta">
@@ -583,12 +605,12 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
       </div>
 
       <dl class="facts-lite">
-        <dt>Currently building</dt>
-        <dd>Five products across iPhone, Android and Mac.<small>All in active development.</small></dd>
-        <dt>Platforms</dt>
-        <dd>iPhone, Android and Mac.<small>Built by the two of us.</small></dd>
-        <dt>The studio</dt>
-        <dd>3 Bears Studio LLC<small>Founded 2026</small></dd>
+        <div><dt>Currently building</dt>
+        <dd>Five products across iPhone, Android and Mac.<small>All in active development.</small></dd></div>
+        <div><dt>Platforms</dt>
+        <dd>iPhone, Android and Mac.<small>Built by the two of us.</small></dd></div>
+        <div><dt>The studio</dt>
+        <dd>3 Bears Studio LLC<small>Founded 2026</small></dd></div>
       </dl>
     </div>
   </div>
