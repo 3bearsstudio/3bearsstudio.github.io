@@ -50,6 +50,30 @@ these current is a manual job.
 |---|---|---|---|
 | `fonts/Fraunces.woff2` | Display serif, roman. Variable: `opsz` 9–144, `wght` 300–800. Latin subset, 66 KB | Google Fonts v38 | SIL OFL 1.1 — `fonts/Fraunces-OFL.txt` |
 | `fonts/Fraunces-Italic.woff2` | The **true** italic of the same face, 80 KB | Google Fonts v38 | same |
+| `vendor/anime.esm.min.js` | Animation engine. Drives the device-fan scroll reveal. 116 KB on disk, **40 KB gzipped** on the wire | anime.js **4.5.0** | MIT — `vendor/anime-LICENSE.md` |
+
+**Updating Anime.js** is manual — there is no lockfile. Replace the file, replace
+`vendor/anime-LICENSE.md`, and bump the version in this table. Check the v4 changelog
+first: the page imports `animate`, `stagger` and `onScroll` as named ESM exports.
+
+## Screenshots
+
+`assets/shots/<app>/` holds the device screenshots, as **720px-wide WebP** (~30–65 KB each).
+Raw simulator captures are ~2 MB PNGs and must **never** be committed — git keeps them forever,
+so deleting them later does not shrink the repo.
+
+```bash
+python3 tools/prep-shots.py <raw-capture-dir> assets/shots/<app>
+```
+
+`tools/prep-shots.py` resizes and converts; run it before the first commit, not after. Its
+docstring covers usage, failure modes, and why it must not be used on App Store submission
+screenshots (Apple wants full-resolution PNGs at exact device sizes — this script destroys both).
+
+**Only apps with real screenshots get the featured treatment.** Kove and Sail Suitely have
+captures, so they get a fan of three devices beside their copy; the rest stay text-only in the
+"Also in the works" row until their captures exist. Do not invent a mockup to fill the gap —
+that would undo the entire point of the section.
 
 **Why both files.** Without the italic face the browser fakes italic by skewing the roman. On a
 high-contrast display serif that is visibly wrong — real italic letterforms change *shape*, they
