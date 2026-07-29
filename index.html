@@ -192,9 +192,21 @@ main{position:relative}
      These land at ~0.62x, leaving ~91px of air between neighbours. */
   --R:380px; --dy:11px; --dev:148px}
 .tornado{height:640px;display:grid;place-items:center;perspective:1500px}
+/* TWO nested rings so two rotations can compose instead of fighting over the same
+   `transform` property:
+     .tornado-ring  — driven by SCROLL (Anime.js, scrubbed)
+     .tornado-auto  — a slow idle drift so the ring is never completely dead
+   Both need preserve-3d or the 3D context collapses at the nesting point and the
+   devices flatten into a stack. */
 .tornado-ring{position:relative;width:0;height:0;transform-style:preserve-3d;
-  animation:turn 42s linear infinite;will-change:transform}
+  will-change:transform}
+.tornado-auto{position:absolute;left:0;top:0;transform-style:preserve-3d;
+  animation:turn 150s linear infinite;will-change:transform}
 @keyframes turn{to{transform:rotateY(-360deg)}}
+/* With JS running, scroll is the main driver and the idle is barely there. With
+   JS off there is no scroll driver, so the idle carries the whole effect and
+   wants to be much faster. */
+html:not(.js-anime) .tornado-auto{animation-duration:46s}
 
 .tphone{position:absolute;margin:0;width:var(--dev);
   left:calc(var(--dev) / -2); top:calc(var(--dev) * -1.09);
@@ -217,7 +229,12 @@ main{position:relative}
   .tornado{height:430px;perspective:1150px}
 }
 @media (prefers-reduced-motion:reduce){
-  .tornado-ring{animation:none}
+  /* Must name .tornado-auto — the animation moved there when the rings were
+     nested, and the old rule pointed at an element that no longer animates. The
+     `html:not(.js-anime)` speed-up has to be neutralised here too, or a
+     reduced-motion visitor (who never gets the js-anime class) would be served
+     the FASTER idle instead of none. */
+  .tornado-ring,.tornado-auto,html:not(.js-anime) .tornado-auto{animation:none!important}
 }
 
 /* Vertical rhythm is deliberately UNEVEN. Equal padding on every section is the
@@ -724,6 +741,7 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
 <section class="reel" aria-label="Screens from our apps">
   <div class="tornado">
     <div class="tornado-ring" style="--n:10">
+      <div class="tornado-auto">
           <figure class="tphone" style="--i:0"><img src="assets/shots/kove/00-onboarding-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
           <figure class="tphone" style="--i:1"><img src="assets/shots/sail-suitely/01-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
           <figure class="tphone" style="--i:2"><img src="assets/shots/kove/01-focus-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
@@ -734,6 +752,7 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
           <figure class="tphone" style="--i:7"><img src="assets/shots/sail-suitely/04-price-history-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
           <figure class="tphone" style="--i:8"><img src="assets/shots/kove/04-session-picker-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
           <figure class="tphone" style="--i:9"><img src="assets/shots/sail-suitely/05-detail-itinerary-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+      </div>
     </div>
   </div>
 </section>
@@ -1147,14 +1166,48 @@ import { animate, stagger, onScroll } from './vendor/anime.esm.min.js';
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 const fans = document.querySelectorAll('.shots');
 
-// The device ring turns via a pure CSS animation — no JS driver — so it keeps
-// moving whether or not you are scrolling, which a tornado has to. Its only
-// script involvement is the pause-when-off-screen below.
+// The ring spins with the scroll. A full revolution is mapped across the band's
+// whole passage through the viewport, scrubbed both directions — scroll back up
+// and it unwinds. The slow CSS idle underneath keeps it alive when you stop.
 const ring = document.querySelector('.tornado-ring');
-if (ring && 'IntersectionObserver' in window) {
+const idle = document.querySelector('.tornado-auto');
+
+// Driven by a plain scroll handler rather than Anime's ScrollObserver. Two
+// reasons: the maths is inspectable (one rect, one ratio, one angle), and it can
+// be verified by calling spin() directly — the library's observer could not be
+// exercised in the test harness at all, so a broken version of this shipped once
+// already and looked like a dead effect.
+if (ring && !reduced.matches) {
+  document.documentElement.classList.add('js-anime');
+  const band = ring.closest('.reel');
+  const TURNS = 1;                       // full revolutions per pass of the band
+
+  const spin = () => {
+    const r = band.getBoundingClientRect();
+    // 0 when the band's top first touches the bottom of the screen,
+    // 1 once its bottom has cleared the top — a full pass, either direction.
+    const travel = window.innerHeight + r.height;
+    const p = Math.min(1, Math.max(0, (window.innerHeight - r.top) / travel));
+    ring.style.transform = `rotateY(${(-360 * TURNS * p).toFixed(2)}deg)`;
+  };
+
+  let queued = false;
+  const onScrollSpin = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => { spin(); queued = false; });
+  };
+  window.addEventListener('scroll', onScrollSpin, { passive: true });
+  window.addEventListener('resize', onScrollSpin, { passive: true });
+  spin();
+}
+
+// Pause the idle drift when the band is off-screen — no reason to composite a
+// rotating 3D layer nobody can see.
+if (idle && 'IntersectionObserver' in window) {
   new IntersectionObserver((entries) => {
-    ring.style.animationPlayState = entries[0].isIntersecting ? 'running' : 'paused';
-  }, { threshold: 0 }).observe(ring.closest('.reel'));
+    idle.style.animationPlayState = entries[0].isIntersecting ? 'running' : 'paused';
+  }, { threshold: 0 }).observe(idle.closest('.reel'));
 }
 
 if (!reduced.matches && fans.length) {
