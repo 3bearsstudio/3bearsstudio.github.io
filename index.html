@@ -40,7 +40,37 @@
 </script>
 
 <style>
+/* Fraunces — variable display serif, SIL Open Font License 1.1.
+   Self-hosted from fonts/ so the page makes no third-party request; see
+   ~/appDevelopment/md/studio-identity-web-standards.md §4. Licence text sits
+   beside the file at fonts/Fraunces-OFL.txt. Latin subset, 66 KB, carrying the
+   full opsz 9–144 and wght 300–800 range in one file. */
+@font-face{
+  font-family:"Fraunces";
+  src:url("fonts/Fraunces.woff2") format("woff2");
+  font-weight:300 800;
+  font-style:normal;
+  font-display:swap;               /* never hide text while the font loads */
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,
+    U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+/* The TRUE italic, not a synthesized slant. Without this face the browser fakes
+   italic by skewing the roman, which on a high-contrast display serif is visibly
+   wrong — the letterforms should change shape, not just lean. Only the hero
+   accent uses it, but that is the most-looked-at type on the page. */
+@font-face{
+  font-family:"Fraunces";
+  src:url("fonts/Fraunces-Italic.woff2") format("woff2");
+  font-weight:300 800;
+  font-style:italic;
+  font-display:swap;
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,
+    U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
 :root{
+  /* Georgia is a genuine fallback here, not decoration: it is metrically close
+     enough that a swap doesn't reflow the page badly on a slow connection. */
+  --display:"Fraunces",Georgia,"Iowan Old Style","Times New Roman",serif;
   --night:#070d1a; --deep:#0f2740; --arctic:#14304d;
   --aurora:#7fe3c4; --aurora2:#9db8ff; --foam:#8fd8ea;
   --snow:#f5f8fc; --paper:#fff; --ink:#16202e;
@@ -58,7 +88,7 @@ body{
 a{color:var(--kicker)}
 a:focus-visible,button:focus-visible{outline:2px solid var(--aurora2);outline-offset:3px}
 .wrap{width:100%;max-width:1080px;margin:0 auto;padding:0 28px}
-.serif{font-family:Georgia,"Iowan Old Style","Times New Roman",serif}
+.serif{font-family:var(--display)}
 .skip{position:absolute;left:-9999px}
 .skip:focus{left:12px;top:12px;z-index:99;background:#fff;padding:10px 16px;border-radius:8px}
 
@@ -104,7 +134,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--aurora2);outline-of
   animation:pulse 3.4s ease-in-out infinite,ring 3.4s ease-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 @keyframes ring{0%{box-shadow:0 0 0 0 rgba(127,227,196,.5)}70%,100%{box-shadow:0 0 0 10px rgba(127,227,196,0)}}
-h1{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-weight:600;
+h1{font-family:var(--display);font-weight:600;
   font-size:clamp(32px,5.1vw,54px);line-height:1.1;margin:20px 0 18px;max-width:17ch;letter-spacing:-.01em}
 h1 .g{background:linear-gradient(100deg,var(--aurora),var(--foam),var(--aurora2),var(--aurora));
   background-size:280% 100%;animation:sheen 14s ease-in-out infinite;
@@ -140,7 +170,7 @@ section.alt{background:var(--paper);border-top:1px solid var(--line);border-bott
   padding-top:9px;display:flex;align-items:baseline;gap:9px}
 .sec-num i{font-style:normal;opacity:.55}
 .sec-num::after{content:"";flex:1;height:1px;background:var(--line);margin-top:6px}
-h2{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-size:clamp(24px,3.3vw,34px);
+h2{font-family:var(--display);font-size:clamp(24px,3.3vw,34px);
   margin:0 0 10px;color:var(--arctic);line-height:1.2}
 .sec-head p{margin:0;color:var(--muted);max-width:56ch;font-size:16.5px}
 
@@ -165,7 +195,7 @@ section.alt .app{background:var(--snow)}
 .app:hover{transform:translateY(-4px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
   box-shadow:0 2px 4px rgba(16,32,52,.06),0 18px 46px rgba(16,32,52,.13)}
 .app-top{display:flex;align-items:center;gap:11px;margin-bottom:13px;flex-wrap:wrap}
-.app h3{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-size:21px;margin:0;color:var(--arctic)}
+.app h3{font-family:var(--display);font-size:21px;margin:0;color:var(--arctic)}
 .badge{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
   border-radius:999px;padding:3px 9px;background:rgba(26,99,144,.1);color:var(--kicker)}
 .plat{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.03em}
@@ -194,7 +224,7 @@ section.alt .app{background:var(--snow)}
 
 /* story */
 figure.story{margin:0;display:grid;grid-template-columns:150px minmax(0,1fr);gap:28px;align-items:start}
-figure.story blockquote{margin:0;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;
+figure.story blockquote{margin:0;font-family:var(--display);
   font-size:clamp(19px,2.3vw,24px);line-height:1.5;color:var(--arctic);max-width:34ch}
 figure.story figcaption{margin-top:16px;color:var(--muted);font-size:15.5px;max-width:52ch}
 .paws{display:flex;gap:9px;padding-top:10px}
@@ -206,7 +236,7 @@ figure.story figcaption{margin-top:16px;color:var(--muted);font-size:15.5px;max-
   background:radial-gradient(circle,rgba(127,227,196,.2),transparent 70%);filter:blur(60px);pointer-events:none;
   animation:plateGlow 20s ease-in-out infinite alternate;will-change:transform}
 @keyframes plateGlow{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(34%,8%,0) scale(1.25)}}
-.plate h3{margin:0 0 4px;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-size:21px;color:#fff;position:relative}
+.plate h3{margin:0 0 4px;font-family:var(--display);font-size:21px;color:#fff;position:relative}
 .plate .sub{margin:0 0 24px;font-size:14px;color:rgba(245,248,252,.66);position:relative}
 .plate dl{margin:0;display:grid;grid-template-columns:190px minmax(0,1fr);gap:0;position:relative}
 .plate dt{font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
