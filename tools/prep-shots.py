@@ -10,20 +10,30 @@ WHY THIS EXISTS
     shrink the repo. Resize and convert BEFORE the first commit, not after.
 
 USAGE
-    python3 tools/prep-shots.py <src-dir> <out-dir> [--width 720] [--quality 80]
+    python3 tools/prep-shots.py <src-dir> <out-dir> [--widths 1206,720] [--quality 92]
 
     # typical:
     python3 tools/prep-shots.py ~/captures/kove assets/shots/kove
 
 INPUT
     Any directory of .png / .jpg screenshots. Files are processed in sorted order and
-    keep their basename, so `01-focus-home.png` becomes `01-focus-home.webp` — name
-    the captures deliberately and the output is already ordered for the page.
+    keep their basename, so `01-focus-home.png` becomes `01-focus-home-1206.webp` —
+    name the captures deliberately and the output is already ordered for the page.
 
 OUTPUT
-    WebP at --width (default 720px wide, which is 2x a ~360px display slot, i.e.
-    retina-sharp at the size these are actually shown). Aspect ratio is preserved.
-    Prints a before/after table and the total saving.
+    One WebP per width, suffixed `-<width>`, ready to drop straight into a `srcset`:
+
+        srcset="…-720.webp 720w, …-1206.webp 1206w"  sizes="(max-width:900px) 40vw, 20vw"
+
+    Aspect ratio is preserved. Prints a per-file table and the total saving.
+
+ON QUALITY — read this before lowering it
+    These are UI screenshots, not photographs. They are full of small, high-contrast
+    text, and WebP smears exactly that. The first pass of this script ran at q80/720px
+    and squeezed a dark habit-tracker screen down to 28 KB; it looked visibly soft and
+    the owner rejected it. Photographic rules of thumb do not transfer. Default is
+    **q92 at native width**, and going below ~q88 on app UI is a false economy — the
+    screenshots are the entire reason the section exists.
 
 FAILURE MODES
     - Pillow missing or built without WebP  -> exits 1 with the check that failed.
@@ -57,9 +67,18 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("src", type=Path, help="directory of raw screenshots")
     parser.add_argument("out", type=Path, help="directory to write .webp into (created if absent)")
-    parser.add_argument("--width", type=int, default=720, help="target width in px (default 720)")
-    parser.add_argument("--quality", type=int, default=80, help="WebP quality 1-100 (default 80)")
+    parser.add_argument("--widths", default="1206,720",
+                        help="comma-separated target widths in px (default 1206,720)")
+    parser.add_argument("--quality", type=int, default=92,
+                        help="WebP quality 1-100 (default 92 — see ON QUALITY above)")
     args = parser.parse_args()
+
+    try:
+        widths = sorted({int(w) for w in args.widths.split(",") if w.strip()}, reverse=True)
+    except ValueError:
+        return fail(f"--widths must be comma-separated integers, got: {args.widths}")
+    if not widths:
+        return fail("--widths produced no widths")
 
     if not args.src.is_dir():
         return fail(f"source is not a directory: {args.src}")
@@ -71,26 +90,39 @@ def main() -> int:
     args.out.mkdir(parents=True, exist_ok=True)
 
     before_total = after_total = 0
-    print(f"{'file':<28} {'before':>10} {'after':>10} {'saved':>7}")
-    print("-" * 58)
+    widest = widths[0]
+    print(f"{'file':<26} {'source':>9} " + " ".join(f"{str(w) + 'px':>9}" for w in widths))
+    print("-" * (36 + 10 * len(widths)))
 
     for src in sources:
         with Image.open(src) as img:
             img = img.convert("RGB")
-            height = round(img.height * args.width / img.width)
-            resized = img.resize((args.width, height), Image.LANCZOS)
-            dest = args.out / f"{src.stem}.webp"
-            resized.save(dest, "WEBP", quality=args.quality, method=6)
+            if img.width < widest:
+                print(f"  note: {src.name} is only {img.width}px wide — upscaling to {widest}px "
+                      f"will not add detail", file=sys.stderr)
+            row_sizes = []
+            for width in widths:
+                height = round(img.height * width / img.width)
+                resized = img.resize((width, height), Image.LANCZOS)
+                dest = args.out / f"{src.stem}-{width}.webp"
+                resized.save(dest, "WEBP", quality=args.quality, method=6)
+                row_sizes.append(dest.stat().st_size)
 
         before = src.stat().st_size
-        after = dest.stat().st_size
         before_total += before
-        after_total += after
-        print(f"{src.name:<28} {kb(before):>10} {kb(after):>10} {pct(before, after):>7}")
+        # Only the widest counts toward the "after" total: srcset means a visitor
+        # downloads exactly one of these, never all of them.
+        after_total += row_sizes[0]
+        print(f"{src.name:<26} {kb(before):>9} " + " ".join(f"{kb(s):>9}" for s in row_sizes))
 
-    print("-" * 58)
-    print(f"{'TOTAL':<28} {kb(before_total):>10} {kb(after_total):>10} {pct(before_total, after_total):>7}")
-    print(f"\n{len(sources)} file(s) -> {args.out}  ({args.width}px wide, q{args.quality})")
+    print("-" * (36 + 10 * len(widths)))
+    print(f"{'TOTAL (widest only)':<26} {kb(before_total):>9} {kb(after_total):>9}"
+          f"   {pct(before_total, after_total)} smaller")
+    print(f"\n{len(sources)} file(s) x {len(widths)} width(s) -> {args.out}  (q{args.quality})")
+    print("srcset example:")
+    stem = sources[0].stem
+    rel = args.out.as_posix().split("assets/", 1)[-1]
+    print(f'  srcset="assets/{rel}/{stem}-720.webp 720w, assets/{rel}/{stem}-{widest}.webp {widest}w"')
     return 0
 
 

@@ -211,8 +211,16 @@ section.alt .app{background:var(--snow)}
 .app .more:hover .ar{transform:translateX(3px)}
 
 /* ─── featured product: copy beside a fan of real device shots ─── */
-.feature{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.02fr);gap:46px;
+/* The shots column is deliberately the wider of the two: these are the only real
+   product imagery on the page, and at the old 1:1 split the phones rendered around
+   190px, small enough that the app UI inside read as mushy regardless of how the
+   file was encoded. */
+.feature{display:grid;grid-template-columns:minmax(0,0.85fr) minmax(0,1.25fr);gap:44px;
   align-items:center;margin-bottom:58px}
+/* Reversing the ORDER alone would leave the shots in the narrow column and render
+   this feature's phones visibly smaller than the other's — the column widths have to
+   mirror too. */
+.feature.reverse{grid-template-columns:minmax(0,1.25fr) minmax(0,0.85fr)}
 .feature.reverse .feature-copy{order:2}
 .feature.reverse .shots{order:1}
 .feature-copy h3{font-family:var(--display);font-size:clamp(23px,2.9vw,29px);margin:0;color:var(--arctic)}
@@ -234,8 +242,13 @@ section.alt .app{background:var(--snow)}
    can animate it without either of them fighting over `transform`. */
 @property --open{syntax:"<number>";inherits:false;initial-value:1}
 
-.shots{display:flex;justify-content:center;align-items:flex-end;perspective:1600px}
-.phone{position:relative;margin:0;flex:none;width:39%;border-radius:30px;padding:5px;
+/* The fan is a link to the app's own site — the whole cluster, not each phone, so
+   there is one destination and one tab stop. The copy beside it already carries a
+   text link to the same place; this just makes the obvious click target work. */
+.shots{display:flex;justify-content:center;align-items:flex-end;perspective:1600px;
+  text-decoration:none;cursor:pointer;border-radius:34px}
+.shots:focus-visible{outline:2px solid var(--kicker);outline-offset:10px}
+.phone{position:relative;margin:0;flex:none;width:40%;border-radius:30px;padding:5px;
   --tx:0px; --ty:0px; --rot:0deg;
   transform:translate3d(calc(var(--tx) * var(--open)),calc(var(--ty) * var(--open)),0)
             rotate(calc(var(--rot) * var(--open)));
@@ -243,8 +256,10 @@ section.alt .app{background:var(--snow)}
   box-shadow:0 22px 48px rgba(16,32,52,.24),0 3px 8px rgba(16,32,52,.16);
   transition:--open .5s cubic-bezier(.22,1,.36,1)}
 .phone img{display:block;width:100%;height:auto;border-radius:25px}
+/* 3 x 40% = 120%, so the two overlaps have to reclaim 20% for the fan to sit inside
+   its column without clipping. */
 .phone:nth-child(1){--tx:-6px; --ty:24px; --rot:-6deg; z-index:1}
-.phone:nth-child(2){--ty:-12px; z-index:3; margin:0 -6%}
+.phone:nth-child(2){--ty:-12px; z-index:3; margin:0 -10%}
 .phone:nth-child(3){--tx:6px; --ty:24px; --rot:6deg; z-index:2}
 /* the fan opens a little further on hover — enough to read as interactive, not
    enough to reflow anything around it */
@@ -433,7 +448,7 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
   .feature{grid-template-columns:1fr;gap:30px;margin-bottom:46px}
   .feature.reverse .feature-copy,.feature .feature-copy{order:1}
   .feature.reverse .shots,.feature .shots{order:2}
-  .phone{width:36%}
+  .phone{width:38%}
   .plate dl{grid-template-columns:1fr}
   .plate dt{padding-bottom:0;border-top:1px solid rgba(207,234,245,.14)}
   .plate dd{padding-top:4px;border-top:0}
@@ -595,14 +610,20 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
           <ul class="pills"><li>Focus sessions</li><li>App blocking</li><li>Habits</li><li>On-device data</li></ul>
           <a class="more" href="https://3bears.studio/kove/">Visit the Kove site <span class="ar" aria-hidden="true">→</span></a>
         </div>
-        <div class="shots" aria-hidden="false">
-          <figure class="phone"><img src="assets/shots/kove/02-habits.webp" width="720" height="1565" loading="eager" fetchpriority="low" decoding="async"
+        <a class="shots" href="https://3bears.studio/kove/" aria-label="Visit the Kove site">
+          <figure class="phone"><img src="assets/shots/kove/02-habits-1206.webp"
+            srcset="assets/shots/kove/02-habits-720.webp 720w, assets/shots/kove/02-habits-1206.webp 1206w"
+            sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
             alt="Kove's habit list, showing streaks of 50, 58 and 61 days with a week-at-a-glance strip under each one." /></figure>
-          <figure class="phone"><img src="assets/shots/kove/01-focus-home.webp" width="720" height="1565" loading="eager" fetchpriority="low" decoding="async"
+          <figure class="phone"><img src="assets/shots/kove/01-focus-home-1206.webp"
+            srcset="assets/shots/kove/01-focus-home-720.webp 720w, assets/shots/kove/01-focus-home-1206.webp 1206w"
+            sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
             alt="Kove's home screen: a filled focus ring reading 60 minutes, two sessions, and a two-day streak." /></figure>
-          <figure class="phone"><img src="assets/shots/kove/03-blocks.webp" width="720" height="1565" loading="eager" fetchpriority="low" decoding="async"
+          <figure class="phone"><img src="assets/shots/kove/03-blocks-1206.webp"
+            srcset="assets/shots/kove/03-blocks-720.webp 720w, assets/shots/kove/03-blocks-1206.webp 1206w"
+            sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
             alt="Kove's blocks screen, with a Deep Work block active and shown as blocking now." /></figure>
-        </div>
+        </a>
       </article>
 
       <article class="feature reverse rv">
@@ -618,14 +639,20 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
           <ul class="pills"><li>Suite classes</li><li>Ultra-luxury lines</li><li>Fare history</li><li>Curated</li></ul>
           <a class="more" href="https://3bears.studio/sail-suitely/">Visit the Sail Suitely site <span class="ar" aria-hidden="true">→</span></a>
         </div>
-        <div class="shots">
-          <figure class="phone"><img src="assets/shots/sail-suitely/02-guide.webp" width="720" height="1565" loading="eager" fetchpriority="low" decoding="async"
+        <a class="shots" href="https://3bears.studio/sail-suitely/" aria-label="Visit the Sail Suitely site">
+          <figure class="phone"><img src="assets/shots/sail-suitely/02-guide-1206.webp"
+            srcset="assets/shots/sail-suitely/02-guide-720.webp 720w, assets/shots/sail-suitely/02-guide-1206.webp 1206w"
+            sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
             alt="Sail Suitely's north star guide, a night-sky screen grouping cruise lines into tiers." /></figure>
-          <figure class="phone"><img src="assets/shots/sail-suitely/01-home.webp" width="720" height="1565" loading="eager" fetchpriority="low" decoding="async"
+          <figure class="phone"><img src="assets/shots/sail-suitely/01-home-1206.webp"
+            srcset="assets/shots/sail-suitely/01-home-720.webp 720w, assets/shots/sail-suitely/01-home-1206.webp 1206w"
+            sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
             alt="Sail Suitely's home screen, with a featured sailing and a grid of ship-within-a-ship enclaves." /></figure>
-          <figure class="phone"><img src="assets/shots/sail-suitely/04-price-history.webp" width="720" height="1565" loading="eager" fetchpriority="low" decoding="async"
+          <figure class="phone"><img src="assets/shots/sail-suitely/04-price-history-1206.webp"
+            srcset="assets/shots/sail-suitely/04-price-history-720.webp 720w, assets/shots/sail-suitely/04-price-history-1206.webp 1206w"
+            sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
             alt="A sailing's fare breakdown with a price-history chart tracking the suite fare over time." /></figure>
-        </div>
+        </a>
       </article>
 
       <h3 class="also rv">Also in the works</h3>
@@ -948,25 +975,47 @@ if (!reduced.matches && fans.length) {
   fans.forEach((fan) => {
     const phones = fan.querySelectorAll('.phone');
 
+    // `sync` scrubs the animation to scroll position rather than firing once, so the
+    // fan opens as the section rises into view and closes again on the way back up —
+    // it keeps responding instead of playing once and freezing. The number is the
+    // smoothing factor: it eases toward the scroll position rather than snapping to it.
     animate(phones, {
       '--open': [0, 1],
-      duration: 1150,
-      delay: stagger(130),
-      ease: 'outExpo',
-      autoplay: onScroll({ target: fan, enter: 'bottom-=40 top', once: true }),
+      delay: stagger(90),
+      ease: 'outQuad',
+      autoplay: onScroll({
+        target: fan,
+        enter: 'bottom-=20 top',
+        leave: 'top+=40 bottom',
+        sync: 0.35,
+      }),
     });
   });
 
-  // Safety net. If the scroll observer never fires — a layout the library reads
-  // differently, a browser quirk — the fan would sit closed forever. Three seconds
-  // in, drop the pre-animation class so CSS puts every phone back at --open:1.
-  setTimeout(() => {
-    const closed = [...fans].every((fan) => {
-      const first = fan.querySelector('.phone');
-      return first && getComputedStyle(first).getPropertyValue('--open').trim() === '0';
-    });
-    if (closed) document.documentElement.classList.remove('js-anime');
-  }, 3000);
+  // Safety net, for the case where the scroll observer never fires and the fan would
+  // sit closed forever.
+  //
+  // It has to check VISIBILITY, not just --open. Under `sync`, a closed fan is the
+  // correct state for a section that is still below the viewport — so a naive "is it
+  // closed?" test would fire on every page load where the visitor hasn't scrolled yet
+  // and permanently disable the very animation it exists to protect.
+  const stuck = (fan) => {
+    const box = fan.getBoundingClientRect();
+    const onScreen = box.top < window.innerHeight * 0.8 && box.bottom > 0;
+    const phone = fan.querySelector('.phone');
+    const open = phone ? parseFloat(getComputedStyle(phone).getPropertyValue('--open')) : 1;
+    return onScreen && open < 0.05;
+  };
+
+  let checks = 0;
+  const watchdog = setInterval(() => {
+    if ([...fans].some(stuck)) {
+      document.documentElement.classList.remove('js-anime');
+      clearInterval(watchdog);
+    } else if (++checks > 20) {
+      clearInterval(watchdog);           // 20 x 1s — stop watching, nothing is wrong
+    }
+  }, 1000);
 
   // Honour a mid-session switch to reduced motion.
   reduced.addEventListener('change', () => {
