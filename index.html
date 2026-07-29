@@ -196,8 +196,8 @@ main{position:relative}
      closer in angle without occluding — which is how 12 devices now fit where 10
      did. The band must be at least (device height + n x --dy) tall or the top and
      bottom of the spiral clip. */
-  --R:380px; --dy:26px; --dev:148px}
-.tornado{height:840px;display:grid;place-items:center;perspective:1500px}
+  --R:380px; --dy:42px; --dev:148px}
+.tornado{height:900px;display:grid;place-items:center;perspective:1500px}
 /* TWO nested rings so two rotations can compose instead of fighting over the same
    `transform` property:
      .tornado-ring  — driven by SCROLL (Anime.js, scrubbed)
@@ -231,8 +231,8 @@ html:not(.js-anime) .tornado-auto{animation-duration:46s}
   /* Same constraint at phone size: 10 x 88px against a 1351px circumference is
      0.65x, ~47px of air between devices. A softer perspective too — 800px made
      the side devices collapse into unreadable slivers. */
-  .reel{--R:215px; --dy:16px; --dev:88px}
-  .tornado{height:540px;perspective:1150px}
+  .reel{--R:215px; --dy:26px; --dev:88px}
+  .tornado{height:580px;perspective:1150px}
 }
 @media (prefers-reduced-motion:reduce){
   /* Must name .tornado-auto — the animation moved there when the rings were
@@ -1190,7 +1190,7 @@ if (ring && !reduced.matches) {
   const band = ring.closest('.reel');
   const TURNS = 1;                       // full revolutions per pass of the band
 
-  const RISE = 150;                      // px the spiral drifts vertically per pass
+  const RISE = 230;                      // px the spiral drifts vertically per pass
 
   const spin = () => {
     const r = band.getBoundingClientRect();
