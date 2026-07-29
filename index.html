@@ -185,8 +185,13 @@ main{position:relative}
      --dy  vertical rise per step, which turns the ring into a helix (the tornado)
      --dev device width */
 .reel{padding:0;overflow:hidden;background:var(--snow);border-bottom:1px solid var(--line);
-  --R:340px; --dy:13px; --dev:150px}
-.tornado{height:600px;display:grid;place-items:center;perspective:1250px}
+  /* Geometry has a hard constraint: n x --dev must stay comfortably UNDER the
+     circumference 2*pi*R, or the devices physically cannot fit and are forced to
+     overlap and occlude each other. The first version ran 16 devices at 1.39x the
+     circumference on mobile, which is why it looked like a pile rather than a ring.
+     These land at ~0.62x, leaving ~91px of air between neighbours. */
+  --R:380px; --dy:11px; --dev:148px}
+.tornado{height:640px;display:grid;place-items:center;perspective:1500px}
 .tornado-ring{position:relative;width:0;height:0;transform-style:preserve-3d;
   animation:turn 42s linear infinite;will-change:transform}
 @keyframes turn{to{transform:rotateY(-360deg)}}
@@ -205,8 +210,11 @@ main{position:relative}
 .tphone img{display:block;width:100%;height:auto;border-radius:16px}
 
 @media (max-width:700px){
-  .reel{--R:190px; --dy:9px; --dev:104px}
-  .tornado{height:400px;perspective:800px}
+  /* Same constraint at phone size: 10 x 88px against a 1351px circumference is
+     0.65x, ~47px of air between devices. A softer perspective too — 800px made
+     the side devices collapse into unreadable slivers. */
+  .reel{--R:215px; --dy:7px; --dev:88px}
+  .tornado{height:430px;perspective:1150px}
 }
 @media (prefers-reduced-motion:reduce){
   .tornado-ring{animation:none}
@@ -715,23 +723,17 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
 
 <section class="reel" aria-label="Screens from our apps">
   <div class="tornado">
-    <div class="tornado-ring" style="--n:16">
+    <div class="tornado-ring" style="--n:10">
           <figure class="tphone" style="--i:0"><img src="assets/shots/kove/00-onboarding-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-          <figure class="tphone" style="--i:1"><img src="assets/shots/kove/01-focus-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-          <figure class="tphone" style="--i:2"><img src="assets/shots/kove/02-habits-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-          <figure class="tphone" style="--i:3"><img src="assets/shots/kove/03-blocks-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-          <figure class="tphone" style="--i:4"><img src="assets/shots/kove/04-session-picker-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-          <figure class="tphone" style="--i:5"><img src="assets/shots/kove/05-breathing-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-          <figure class="tphone" style="--i:6"><img src="assets/shots/kove/06-achievements-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-          <figure class="tphone" style="--i:7"><img src="assets/shots/sail-suitely/01-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
-          <figure class="tphone" style="--i:8"><img src="assets/shots/sail-suitely/02-guide-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
-          <figure class="tphone" style="--i:9"><img src="assets/shots/sail-suitely/03-search-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
-          <figure class="tphone" style="--i:10"><img src="assets/shots/sail-suitely/04-price-history-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
-          <figure class="tphone" style="--i:11"><img src="assets/shots/sail-suitely/05-detail-itinerary-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
-          <figure class="tphone" style="--i:12"><img src="assets/shots/kove/00-onboarding-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-          <figure class="tphone" style="--i:13"><img src="assets/shots/kove/01-focus-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-          <figure class="tphone" style="--i:14"><img src="assets/shots/kove/02-habits-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-          <figure class="tphone" style="--i:15"><img src="assets/shots/kove/03-blocks-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+          <figure class="tphone" style="--i:1"><img src="assets/shots/sail-suitely/01-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+          <figure class="tphone" style="--i:2"><img src="assets/shots/kove/01-focus-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+          <figure class="tphone" style="--i:3"><img src="assets/shots/sail-suitely/02-guide-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+          <figure class="tphone" style="--i:4"><img src="assets/shots/kove/02-habits-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+          <figure class="tphone" style="--i:5"><img src="assets/shots/sail-suitely/03-search-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+          <figure class="tphone" style="--i:6"><img src="assets/shots/kove/03-blocks-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+          <figure class="tphone" style="--i:7"><img src="assets/shots/sail-suitely/04-price-history-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+          <figure class="tphone" style="--i:8"><img src="assets/shots/kove/04-session-picker-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+          <figure class="tphone" style="--i:9"><img src="assets/shots/sail-suitely/05-detail-itinerary-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
     </div>
   </div>
 </section>
