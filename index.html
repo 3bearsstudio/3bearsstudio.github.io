@@ -100,12 +100,16 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--aurora2);outline-of
 .kicker{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(143,216,234,.35);
   border-radius:999px;padding:6px 14px;font-size:12px;font-weight:700;letter-spacing:.1em;
   text-transform:uppercase;color:#cfeaf5;background:rgba(143,216,234,.08)}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--aurora);animation:pulse 3.4s ease-in-out infinite}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--aurora);flex:none;
+  animation:pulse 3.4s ease-in-out infinite,ring 3.4s ease-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(127,227,196,.5)}70%,100%{box-shadow:0 0 0 10px rgba(127,227,196,0)}}
 h1{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-weight:600;
   font-size:clamp(32px,5.1vw,54px);line-height:1.1;margin:20px 0 18px;max-width:17ch;letter-spacing:-.01em}
-h1 .g{background:linear-gradient(100deg,var(--aurora),var(--aurora2));
+h1 .g{background:linear-gradient(100deg,var(--aurora),var(--foam),var(--aurora2),var(--aurora));
+  background-size:280% 100%;animation:sheen 14s ease-in-out infinite;
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-style:italic}
+@keyframes sheen{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 @supports not (background-clip:text){h1 .g{-webkit-text-fill-color:currentColor;color:var(--aurora)}}
 @media (forced-colors:active){h1 .g{-webkit-text-fill-color:currentColor;background:none}}
 .lead{font-size:clamp(16px,1.6vw,18.5px);color:rgba(245,248,252,.86);max-width:56ch;margin:0 0 28px}
@@ -141,11 +145,25 @@ h2{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-size:clamp
 .sec-head p{margin:0;color:var(--muted);max-width:56ch;font-size:16.5px}
 
 /* products */
-.apps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-.app{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:26px 24px;
-  box-shadow:var(--shadow);display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s}
+.apps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,1fr);gap:20px;perspective:1200px}
+.app{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:26px 24px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;
+  transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s}
 section.alt .app{background:var(--snow)}
-.app:hover{transform:translateY(-3px);box-shadow:0 2px 4px rgba(16,32,52,.06),0 14px 34px rgba(16,32,52,.1)}
+.app>*{position:relative;z-index:1}
+/* cursor-tracking spotlight */
+.app::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;
+  opacity:0;transition:opacity .32s;
+  background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),rgba(127,227,196,.20),transparent 62%)}
+/* aurora hairline that lights up on hover */
+.app::after{content:"";position:absolute;inset:-1px;border-radius:17px;pointer-events:none;z-index:0;
+  opacity:0;transition:opacity .32s;padding:1px;
+  background:linear-gradient(135deg,var(--aurora),var(--aurora2) 45%,transparent 72%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}
+.app:hover::before,.app:hover::after,.app:focus-within::before,.app:focus-within::after{opacity:1}
+.app:hover{transform:translateY(-4px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+  box-shadow:0 2px 4px rgba(16,32,52,.06),0 18px 46px rgba(16,32,52,.13)}
 .app-top{display:flex;align-items:center;gap:11px;margin-bottom:13px;flex-wrap:wrap}
 .app h3{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-size:21px;margin:0;color:var(--arctic)}
 .badge{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
@@ -185,7 +203,9 @@ figure.story figcaption{margin-top:16px;color:var(--muted);font-size:15.5px;max-
 /* company details plate */
 .plate{background:var(--night);color:var(--snow);border-radius:18px;padding:34px 32px;position:relative;overflow:hidden}
 .plate::before{content:"";position:absolute;left:-10%;top:-60%;width:60%;height:180%;
-  background:radial-gradient(circle,rgba(127,227,196,.2),transparent 70%);filter:blur(60px);pointer-events:none}
+  background:radial-gradient(circle,rgba(127,227,196,.2),transparent 70%);filter:blur(60px);pointer-events:none;
+  animation:plateGlow 20s ease-in-out infinite alternate;will-change:transform}
+@keyframes plateGlow{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(34%,8%,0) scale(1.25)}}
 .plate h3{margin:0 0 4px;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-size:21px;color:#fff;position:relative}
 .plate .sub{margin:0 0 24px;font-size:14px;color:rgba(245,248,252,.66);position:relative}
 .plate dl{margin:0;display:grid;grid-template-columns:190px minmax(0,1fr);gap:0;position:relative}
@@ -202,8 +222,120 @@ footer .links a{text-decoration:none}
 footer .links a:hover{text-decoration:underline}
 footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-height:1.7}
 
+/* ─────────── MOTION LAYER ───────────
+   Everything below is decorative. Each piece either degrades to a static page
+   with JS off, or is switched off entirely by prefers-reduced-motion. */
+
+/* scroll progress rail */
+.progress{position:fixed;top:0;left:0;height:3px;width:100%;z-index:60;pointer-events:none;
+  transform:scaleX(0);transform-origin:0 50%;
+  background:linear-gradient(90deg,var(--aurora),var(--foam),var(--aurora2));
+  box-shadow:0 0 14px rgba(127,227,196,.45)}
+
+/* condensed bar that slides in once the hero has scrolled away */
+.minibar{position:fixed;top:0;left:0;right:0;z-index:50;
+  background:rgba(7,13,26,.74);border-bottom:1px solid rgba(207,234,245,.12);
+  -webkit-backdrop-filter:saturate(170%) blur(14px);backdrop-filter:saturate(170%) blur(14px);
+  transform:translateY(-101%);transition:transform .4s cubic-bezier(.22,1,.36,1)}
+.minibar.show{transform:none}
+.minibar .wrap{display:flex;align-items:center;gap:18px;padding-top:11px;padding-bottom:11px}
+.minibar .brand svg{width:26px;height:26px}
+.minibar .brand b{font-size:12px}
+.minibar .nav a{font-size:12.5px}
+/* below 560px .nav is hidden by design, which would leave the bar as a bare
+   duplicate of the hero logo — so drop the bar entirely at that size */
+@media (max-width:560px){.minibar{display:none}}
+
+/* aurora curtains — separated light shafts that fade out top and bottom, so they
+   read as streaks rather than one solid lightening bar over the night sky */
+.ribbon{position:absolute;left:-20%;width:140%;pointer-events:none;filter:blur(38px);
+  mix-blend-mode:screen;will-change:transform;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 42%,#000 58%,transparent 100%);
+          mask-image:linear-gradient(180deg,transparent 0%,#000 42%,#000 58%,transparent 100%)}
+.r1{top:-6%;height:46%;opacity:.30;
+  background:linear-gradient(94deg,transparent 4%,var(--aurora) 20%,transparent 36%,
+    var(--foam) 54%,transparent 70%,var(--aurora2) 86%,transparent 98%);
+  animation:rib1 30s ease-in-out infinite alternate}
+.r2{top:14%;height:38%;opacity:.16;
+  background:linear-gradient(86deg,transparent 8%,var(--aurora2) 28%,transparent 46%,
+    var(--aurora) 68%,transparent 88%);
+  animation:rib2 40s ease-in-out infinite alternate}
+@keyframes rib1{from{transform:rotate(-6deg) translate3d(-5%,0,0) scaleY(1)}
+                to{transform:rotate(-2deg) translate3d(6%,14%,0) scaleY(1.3)}}
+@keyframes rib2{from{transform:rotate(5deg) translate3d(5%,0,0) scaleY(1.15)}
+                to{transform:rotate(1deg) translate3d(-6%,-10%,0) scaleY(.82)}}
+
+/* drifting snow (spans injected by JS — decorative only) */
+.snow{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.snow i{position:absolute;top:-14px;border-radius:50%;background:#fff;opacity:0;
+  animation:fall linear infinite;will-change:transform}
+@keyframes fall{
+  0%{opacity:0;transform:translate3d(0,0,0)}
+  10%{opacity:.8}
+  90%{opacity:.45}
+  100%{opacity:0;transform:translate3d(var(--dx,20px),var(--fall,760px),0)}}
+
+/* the ice shelf breathes */
+.drift path{will-change:transform}
+.drift .w1{animation:wave1 19s ease-in-out infinite alternate}
+.drift .w2{animation:wave2 26s ease-in-out infinite alternate}
+@keyframes wave1{from{transform:translateX(0)}to{transform:translateX(-28px)}}
+@keyframes wave2{from{transform:translateX(0)}to{transform:translateX(24px)}}
+
+/* hero headline — words rise out of a mask */
+.w{display:inline-block;overflow:hidden;vertical-align:bottom;
+  padding-bottom:.14em;margin-bottom:-.14em}
+.w>span{display:inline-block;
+  transition:transform 1s cubic-bezier(.19,1,.22,1),opacity .8s ease}
+.js-hero .w>span{transform:translateY(115%);opacity:0}
+.js-hero .w.on>span{transform:none;opacity:1}
+
+/* nav underlines */
+.nav a{position:relative}
+.nav a::after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:1.5px;background:var(--aurora);
+  transform:scaleX(0);transform-origin:left;transition:transform .26s}
+.nav a:hover::after,.nav a:focus-visible::after{transform:scaleX(1)}
+
+/* buttons get a light sweep */
+.btn{position:relative;overflow:hidden}
+.btn::before{content:"";position:absolute;top:0;left:-130%;width:55%;height:100%;pointer-events:none;
+  transform:skewX(-18deg);transition:left .65s ease;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.42),transparent)}
+.btn:hover::before,.btn:focus-visible::before{left:150%}
+
+/* section rules draw themselves in */
+.js .sec-num::after{transform:scaleX(0);transform-origin:left;
+  transition:transform 1s cubic-bezier(.22,1,.36,1) .12s}
+.js .rv.in .sec-num::after{transform:scaleX(1)}
+
+/* the paw prints walk in one after another */
+.js .paws svg{opacity:0;transform:translateY(12px) rotate(-9deg);
+  transition:opacity .5s ease,transform .6s cubic-bezier(.22,1,.36,1)}
+.js .rv.in .paws svg{opacity:1;transform:none}
+.js .rv.in .paws svg:nth-child(1){transition-delay:.06s}
+.js .rv.in .paws svg:nth-child(2){transition-delay:.24s}
+.js .rv.in .paws svg:nth-child(3){transition-delay:.42s}
+
+/* company plate — rows deal out like cards */
+.js .plate dt,.js .plate dd{opacity:0;transform:translateY(9px);
+  transition:opacity .5s ease,transform .55s cubic-bezier(.22,1,.36,1)}
+.js .plate.in dt,.js .plate.in dd{opacity:1;transform:none}
+.js .plate.in dt:nth-of-type(1),.js .plate.in dd:nth-of-type(1){transition-delay:.08s}
+.js .plate.in dt:nth-of-type(2),.js .plate.in dd:nth-of-type(2){transition-delay:.15s}
+.js .plate.in dt:nth-of-type(3),.js .plate.in dd:nth-of-type(3){transition-delay:.22s}
+.js .plate.in dt:nth-of-type(4),.js .plate.in dd:nth-of-type(4){transition-delay:.29s}
+.js .plate.in dt:nth-of-type(5),.js .plate.in dd:nth-of-type(5){transition-delay:.36s}
+.js .plate.in dt:nth-of-type(6),.js .plate.in dd:nth-of-type(6){transition-delay:.43s}
+.js .plate.in dt:nth-of-type(7),.js .plate.in dd:nth-of-type(7){transition-delay:.50s}
+.js .plate.in dt:nth-of-type(8),.js .plate.in dd:nth-of-type(8){transition-delay:.57s}
+
+/* pointer parallax targets */
+.sky,.stars{transition:transform .45s cubic-bezier(.22,1,.36,1)}
+/* every animated layer in the hero stops once the hero scrolls away */
+.sky.paused,.sky.paused *{animation-play-state:paused!important}
+
 /* reveals — hidden state only applied by JS once the observer is live */
-.js .rv{opacity:0;transform:translateY(20px)}
+.js .rv{opacity:0;transform:translateY(22px)}
 .rv{transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
 .js .rv.in{opacity:1;transform:none}
 
@@ -226,14 +358,24 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .band,.stars,.dot{animation:none!important}
+  .band,.stars,.dot,.ribbon,.drift path,.plate::before,h1 .g{animation:none!important}
+  .snow{display:none!important}
   .js .rv,.rv{opacity:1!important;transform:none!important;transition:none!important}
+  .js .paws svg,.js .plate dt,.js .plate dd,.w>span,.js-hero .w>span{
+    opacity:1!important;transform:none!important;transition:none!important}
+  .js .sec-num::after{transform:scaleX(1)!important}
+  .sky,.stars{transform:none!important}
   .btn:hover,.app:hover{transform:none!important}
+  .btn::before{display:none!important}
+  .progress{display:none!important}
+  .minibar{transition:none!important}
   *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
 }
 
 @media print{
-  .sky,.drift,.topbar,.cta{display:none!important}
+  .sky,.drift,.topbar,.cta,.progress,.minibar{display:none!important}
+  .w,.w>span{overflow:visible!important;opacity:1!important;transform:none!important}
+  .app::before,.app::after{display:none!important}
   body{background:#fff;color:#000}
   .hero,.plate,footer{background:#fff!important;color:#000!important}
   .hero::after{display:none}
@@ -249,10 +391,34 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
 <body>
 <a class="skip" href="#main">Skip to content</a>
 
+<div class="progress" id="prog" aria-hidden="true"></div>
+
+<div class="minibar" id="minibar" aria-hidden="true">
+  <div class="wrap">
+    <a class="brand" href="#main" tabindex="-1">
+      <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <ellipse cx="32" cy="41" rx="14" ry="11.5" fill="#7fe3c4"/>
+        <ellipse cx="14.5" cy="27" rx="6" ry="7.5" fill="#7fe3c4" opacity=".92"/>
+        <ellipse cx="25" cy="18" rx="6" ry="7.5" fill="#7fe3c4" opacity=".92"/>
+        <ellipse cx="39" cy="18" rx="6" ry="7.5" fill="#7fe3c4" opacity=".92"/>
+        <ellipse cx="49.5" cy="27" rx="6" ry="7.5" fill="#7fe3c4" opacity=".92"/>
+      </svg>
+      <b>3 Bears Studio</b>
+    </a>
+    <nav class="nav">
+      <a href="#work" tabindex="-1">Work</a>
+      <a href="#studio" tabindex="-1">Studio</a>
+      <a href="mailto:hello@3bears.studio" tabindex="-1">Contact</a>
+    </nav>
+  </div>
+</div>
+
 <header class="hero">
   <div class="sky" aria-hidden="true">
     <div class="band b1"></div><div class="band b2"></div><div class="band b3"></div>
+    <div class="ribbon r1"></div><div class="ribbon r2"></div>
     <div class="stars"></div>
+    <div class="snow" id="snow"></div>
   </div>
 
   <div class="topbar">
@@ -279,7 +445,9 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
     <div class="hero-in">
       <div>
         <span class="kicker"><span class="dot"></span>Independent app studio</span>
-        <h1>We build <span class="g">calm, private</span> apps.</h1>
+        <h1><span class="w"><span>We</span></span> <span class="w"><span>build</span></span>
+          <span class="w"><span class="g">calm,&nbsp;private</span></span>
+          <span class="w"><span>apps.</span></span></h1>
         <p class="lead">3 Bears Studio is a two-person studio making software for iPhone, Android and Mac.
           We would rather make a few things carefully than many things quickly.</p>
         <div class="cta">
@@ -299,8 +467,11 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
   </div>
 
   <svg class="drift" viewBox="0 0 1440 110" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-    <path d="M0,74 C240,24 420,96 720,60 C1020,24 1230,88 1440,52 L1440,110 L0,110 Z" fill="#f5f8fc" opacity=".09"/>
-    <path d="M0,86 C260,42 430,104 720,72 C1010,40 1240,98 1440,66 L1440,110 L0,110 Z" fill="#f5f8fc" opacity=".2"/>
+    <!-- w1/w2 drift sideways, so each carries a 44-unit overhang at both ends: the
+         translate is in user units, so the overhang scales with the viewport and no
+         gap can open at the edges. -->
+    <path class="w1" d="M-44,74 L0,74 C240,24 420,96 720,60 C1020,24 1230,88 1440,52 L1484,52 L1484,110 L-44,110 Z" fill="#f5f8fc" opacity=".09"/>
+    <path class="w2" d="M-44,86 L0,86 C260,42 430,104 720,72 C1010,40 1240,98 1440,66 L1484,66 L1484,110 L-44,110 Z" fill="#f5f8fc" opacity=".2"/>
     <path d="M0,96 C280,58 440,110 720,84 C1000,58 1250,106 1440,80 L1440,110 L0,110 Z" fill="#f5f8fc"/>
   </svg>
 </header>
@@ -498,17 +669,152 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
   };
   mq.addEventListener ? mq.addEventListener('change', onChange) : mq.addListener(onChange);
 
-  // Pause the expensive aurora/star layers when the hero is off-screen.
+  // Pause the aurora/star/snow layers when the hero is off-screen. This uses a
+  // class rather than inline styles on sky.children so it also reaches the
+  // snowflakes, which are grandchildren — animation-play-state doesn't inherit.
   var sky = document.querySelector('.sky');
   var hero = document.querySelector('.hero');
   if (sky && hero && 'IntersectionObserver' in window) {
     new IntersectionObserver(function (es) {
-      sky.style.animationPlayState = es[0].isIntersecting ? '' : 'paused';
-      [].forEach.call(sky.children, function (c) {
-        c.style.animationPlayState = es[0].isIntersecting ? 'running' : 'paused';
-      });
+      sky.classList.toggle('paused', !es[0].isIntersecting);
     }, { threshold: 0 }).observe(hero);
   }
+})();
+
+/* ─────────── MOTION LAYER ───────────
+   Purely decorative. Every block below bails out under prefers-reduced-motion,
+   and none of it is required for the page to read correctly with JS disabled. */
+(function () {
+  var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var reduced = mq.matches;
+  var raf = window.requestAnimationFrame || function (f) { return setTimeout(f, 16); };
+
+  /* — headline: lift each word out of its mask — */
+  var words = [].slice.call(document.querySelectorAll('h1 .w'));
+  if (words.length && !reduced) {
+    document.documentElement.classList.add('js-hero');
+    raf(function () {
+      raf(function () {
+        words.forEach(function (w, i) {
+          setTimeout(function () { w.classList.add('on'); }, 90 + i * 110);
+        });
+      });
+    });
+    // If anything above stalls, never leave the headline invisible.
+    setTimeout(function () { words.forEach(function (w) { w.classList.add('on'); }); }, 2200);
+  }
+
+  /* — snowfall over the hero — */
+  var snow = document.getElementById('snow');
+  if (snow && !reduced) {
+    var flakes = window.innerWidth < 700 ? 14 : 26;
+    var html = '';
+    for (var i = 0; i < flakes; i++) {
+      var size = (1.4 + Math.random() * 2.6).toFixed(1);
+      html += '<i style="left:' + (Math.random() * 100).toFixed(2) + '%;' +
+              'width:' + size + 'px;height:' + size + 'px;' +
+              '--dx:' + (Math.random() * 90 - 45).toFixed(0) + 'px;' +
+              '--fall:' + (520 + Math.random() * 320).toFixed(0) + 'px;' +
+              'animation-duration:' + (11 + Math.random() * 14).toFixed(1) + 's;' +
+              'animation-delay:-' + (Math.random() * 20).toFixed(1) + 's"></i>';
+    }
+    snow.innerHTML = html;
+  }
+
+  /* — scroll progress rail + condensed bar — */
+  var prog = document.getElementById('prog');
+  var minibar = document.getElementById('minibar');
+  var hero = document.querySelector('.hero');
+  if (prog || minibar) {
+    var pending = false;
+    var onScroll = function () {
+      if (pending) return;
+      pending = true;
+      raf(function () {
+        pending = false;
+        if (prog && !reduced) {
+          var max = document.documentElement.scrollHeight - window.innerHeight;
+          var p = max > 0 ? Math.min(1, Math.max(0, window.pageYOffset / max)) : 0;
+          prog.style.transform = 'scaleX(' + p + ')';
+        }
+        if (minibar && hero) {
+          var past = window.pageYOffset > hero.offsetHeight - 70;
+          minibar.classList.toggle('show', past);
+          minibar.setAttribute('aria-hidden', past ? 'false' : 'true');
+          // Links are only reachable by keyboard while the bar is actually on screen.
+          [].forEach.call(minibar.querySelectorAll('a'), function (a) {
+            a.tabIndex = past ? 0 : -1;
+          });
+        }
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    onScroll();
+  }
+
+  /* — pointer parallax on the aurora (fine pointers only) — */
+  var fine = window.matchMedia('(pointer: fine)').matches;
+  var sky = document.querySelector('.sky');
+  var stars = document.querySelector('.stars');
+  if (fine && !reduced && sky && hero) {
+    var queued = false, mx = 0, my = 0;
+    hero.addEventListener('pointermove', function (e) {
+      var r = hero.getBoundingClientRect();
+      mx = (e.clientX - r.left) / r.width - 0.5;
+      my = (e.clientY - r.top) / r.height - 0.5;
+      if (queued) return;
+      queued = true;
+      raf(function () {
+        queued = false;
+        sky.style.transform = 'translate3d(' + (mx * 16).toFixed(1) + 'px,' + (my * 11).toFixed(1) + 'px,0)';
+        if (stars) stars.style.transform = 'translate3d(' + (mx * -24).toFixed(1) + 'px,' + (my * -15).toFixed(1) + 'px,0)';
+      });
+    });
+    hero.addEventListener('pointerleave', function () {
+      sky.style.transform = '';
+      if (stars) stars.style.transform = '';
+    });
+  }
+
+  /* — product cards: spotlight follows the cursor, card tilts toward it — */
+  var cards = [].slice.call(document.querySelectorAll('.app'));
+  if (fine && !reduced && cards.length) {
+    cards.forEach(function (card) {
+      var q = false, px = 0, py = 0;
+      card.addEventListener('pointermove', function (e) {
+        var r = card.getBoundingClientRect();
+        px = (e.clientX - r.left) / r.width;
+        py = (e.clientY - r.top) / r.height;
+        if (q) return;
+        q = true;
+        raf(function () {
+          q = false;
+          card.style.setProperty('--mx', (px * 100).toFixed(1) + '%');
+          card.style.setProperty('--my', (py * 100).toFixed(1) + '%');
+          card.style.setProperty('--ry', ((px - 0.5) * 5).toFixed(2) + 'deg');
+          card.style.setProperty('--rx', ((0.5 - py) * 4).toFixed(2) + 'deg');
+        });
+      });
+      card.addEventListener('pointerleave', function () {
+        card.style.setProperty('--rx', '0deg');
+        card.style.setProperty('--ry', '0deg');
+      });
+    });
+  }
+
+  /* — if reduced-motion is switched on later, stop everything immediately — */
+  var stop = function () {
+    if (!mq.matches) return;
+    reduced = true;
+    if (snow) snow.innerHTML = '';
+    if (prog) prog.style.transform = '';
+    if (sky) sky.style.transform = '';
+    if (stars) stars.style.transform = '';
+    words.forEach(function (w) { w.classList.add('on'); });
+    document.documentElement.classList.remove('js-hero');
+  };
+  mq.addEventListener ? mq.addEventListener('change', stop) : mq.addListener(stop);
 })();
 </script>
 </body>
