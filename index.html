@@ -176,17 +176,40 @@ main{position:relative}
    Edge to edge at EVERY size, phones included. The earlier grid work was gated at
    901px and so did nothing on a phone — which is precisely why that pass did not
    read on mobile. This one has no such gate. */
-.reel{padding:0;overflow:hidden;background:var(--snow);border-bottom:1px solid var(--line)}
-.reel-track{display:flex;gap:16px;width:max-content;padding:46px 0 54px;will-change:transform}
-.rphone{margin:0;flex:none;width:158px;border-radius:22px;padding:4px;
-  transform:translateY(var(--lift,0px));
+/* A 3D carousel, not a marquee. The devices sit on a cylinder and the whole ring
+   turns continuously. The side-to-side track moved everything at one speed and in
+   one direction, so nothing ever settled long enough to look at — this brings each
+   screen to the front, holds it, and carries it away.
+   Pure CSS 3D: no WebGL, no library, and the rotation runs on the compositor.
+     --R   radius of the ring
+     --dy  vertical rise per step, which turns the ring into a helix (the tornado)
+     --dev device width */
+.reel{padding:0;overflow:hidden;background:var(--snow);border-bottom:1px solid var(--line);
+  --R:340px; --dy:13px; --dev:150px}
+.tornado{height:600px;display:grid;place-items:center;perspective:1250px}
+.tornado-ring{position:relative;width:0;height:0;transform-style:preserve-3d;
+  animation:turn 42s linear infinite;will-change:transform}
+@keyframes turn{to{transform:rotateY(-360deg)}}
+
+.tphone{position:absolute;margin:0;width:var(--dev);
+  left:calc(var(--dev) / -2); top:calc(var(--dev) * -1.09);
+  border-radius:20px;padding:4px;
+  /* place on the cylinder, then lift by index so the ring becomes a spiral */
+  transform:rotateY(calc(var(--i) * (360deg / var(--n))))
+            translateZ(var(--R))
+            translateY(calc((var(--i) - var(--n) / 2) * var(--dy)));
+  /* without this the far half of the ring shows mirrored backs */
+  backface-visibility:hidden;
   background:linear-gradient(155deg,#36435c,#111a27 62%);
-  box-shadow:0 14px 30px rgba(16,32,52,.20),0 2px 5px rgba(16,32,52,.12)}
-.rphone img{display:block;width:100%;height:auto;border-radius:18px}
+  box-shadow:0 16px 34px rgba(16,32,52,.22),0 2px 6px rgba(16,32,52,.13)}
+.tphone img{display:block;width:100%;height:auto;border-radius:16px}
+
 @media (max-width:700px){
-  .reel-track{gap:11px;padding:32px 0 38px}
-  .rphone{width:114px;border-radius:18px}
-  .rphone img{border-radius:15px}
+  .reel{--R:190px; --dy:9px; --dev:104px}
+  .tornado{height:400px;perspective:800px}
+}
+@media (prefers-reduced-motion:reduce){
+  .tornado-ring{animation:none}
 }
 
 /* Vertical rhythm is deliberately UNEVEN. Equal padding on every section is the
@@ -691,32 +714,25 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
 <main id="main">
 
 <section class="reel" aria-label="Screens from our apps">
-  <div class="reel-track" data-reel>
-        <figure class="rphone" style="--lift:0px"><img src="assets/shots/kove/00-onboarding-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-        <figure class="rphone" style="--lift:14px"><img src="assets/shots/kove/01-focus-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-        <figure class="rphone" style="--lift:28px"><img src="assets/shots/kove/02-habits-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-        <figure class="rphone" style="--lift:0px"><img src="assets/shots/kove/03-blocks-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-        <figure class="rphone" style="--lift:14px"><img src="assets/shots/kove/04-session-picker-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-        <figure class="rphone" style="--lift:28px"><img src="assets/shots/kove/05-breathing-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-        <figure class="rphone" style="--lift:0px"><img src="assets/shots/kove/06-achievements-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-        <figure class="rphone" style="--lift:14px"><img src="assets/shots/sail-suitely/01-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
-        <figure class="rphone" style="--lift:28px"><img src="assets/shots/sail-suitely/02-guide-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
-        <figure class="rphone" style="--lift:0px"><img src="assets/shots/sail-suitely/03-search-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
-        <figure class="rphone" style="--lift:14px"><img src="assets/shots/sail-suitely/04-price-history-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
-        <figure class="rphone" style="--lift:28px"><img src="assets/shots/sail-suitely/05-detail-itinerary-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
-
-        <figure class="rphone" style="--lift:0px"><img src="assets/shots/kove/00-onboarding-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-        <figure class="rphone" style="--lift:14px"><img src="assets/shots/kove/01-focus-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-        <figure class="rphone" style="--lift:28px"><img src="assets/shots/kove/02-habits-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-        <figure class="rphone" style="--lift:0px"><img src="assets/shots/kove/03-blocks-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-        <figure class="rphone" style="--lift:14px"><img src="assets/shots/kove/04-session-picker-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-        <figure class="rphone" style="--lift:28px"><img src="assets/shots/kove/05-breathing-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-        <figure class="rphone" style="--lift:0px"><img src="assets/shots/kove/06-achievements-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
-        <figure class="rphone" style="--lift:14px"><img src="assets/shots/sail-suitely/01-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
-        <figure class="rphone" style="--lift:28px"><img src="assets/shots/sail-suitely/02-guide-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
-        <figure class="rphone" style="--lift:0px"><img src="assets/shots/sail-suitely/03-search-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
-        <figure class="rphone" style="--lift:14px"><img src="assets/shots/sail-suitely/04-price-history-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
-        <figure class="rphone" style="--lift:28px"><img src="assets/shots/sail-suitely/05-detail-itinerary-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+  <div class="tornado">
+    <div class="tornado-ring" style="--n:16">
+          <figure class="tphone" style="--i:0"><img src="assets/shots/kove/00-onboarding-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+          <figure class="tphone" style="--i:1"><img src="assets/shots/kove/01-focus-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+          <figure class="tphone" style="--i:2"><img src="assets/shots/kove/02-habits-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+          <figure class="tphone" style="--i:3"><img src="assets/shots/kove/03-blocks-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+          <figure class="tphone" style="--i:4"><img src="assets/shots/kove/04-session-picker-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+          <figure class="tphone" style="--i:5"><img src="assets/shots/kove/05-breathing-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+          <figure class="tphone" style="--i:6"><img src="assets/shots/kove/06-achievements-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+          <figure class="tphone" style="--i:7"><img src="assets/shots/sail-suitely/01-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+          <figure class="tphone" style="--i:8"><img src="assets/shots/sail-suitely/02-guide-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+          <figure class="tphone" style="--i:9"><img src="assets/shots/sail-suitely/03-search-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+          <figure class="tphone" style="--i:10"><img src="assets/shots/sail-suitely/04-price-history-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+          <figure class="tphone" style="--i:11"><img src="assets/shots/sail-suitely/05-detail-itinerary-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Sail Suitely." /></figure>
+          <figure class="tphone" style="--i:12"><img src="assets/shots/kove/00-onboarding-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+          <figure class="tphone" style="--i:13"><img src="assets/shots/kove/01-focus-home-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+          <figure class="tphone" style="--i:14"><img src="assets/shots/kove/02-habits-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+          <figure class="tphone" style="--i:15"><img src="assets/shots/kove/03-blocks-720.webp" width="1206" height="2622" decoding="async" alt="A screen from Kove." /></figure>
+    </div>
   </div>
 </section>
 
@@ -1129,21 +1145,14 @@ import { animate, stagger, onScroll } from './vendor/anime.esm.min.js';
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 const fans = document.querySelectorAll('.shots');
 
-// The reel drifts sideways as the band passes through the viewport. It is the one
-// piece of motion that is full-bleed and ungated by breakpoint, so it reads the
-// same on a phone as on a monitor.
-const reel = document.querySelector('[data-reel]');
-if (!reduced.matches && reel) {
-  animate(reel, {
-    translateX: ['3%', '-34%'],
-    ease: 'linear',
-    autoplay: onScroll({
-      target: reel.parentElement,
-      enter: 'bottom top',
-      leave: 'top bottom',
-      sync: 0.3,
-    }),
-  });
+// The device ring turns via a pure CSS animation — no JS driver — so it keeps
+// moving whether or not you are scrolling, which a tornado has to. Its only
+// script involvement is the pause-when-off-screen below.
+const ring = document.querySelector('.tornado-ring');
+if (ring && 'IntersectionObserver' in window) {
+  new IntersectionObserver((entries) => {
+    ring.style.animationPlayState = entries[0].isIntersecting ? 'running' : 'paused';
+  }, { threshold: 0 }).observe(ring.closest('.reel'));
 }
 
 if (!reduced.matches && fans.length) {
