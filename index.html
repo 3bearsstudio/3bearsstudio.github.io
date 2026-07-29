@@ -264,6 +264,22 @@ section.alt .app{background:var(--snow)}
   box-shadow:0 22px 48px rgba(16,32,52,.24),0 3px 8px rgba(16,32,52,.16);
   transition:--open .5s cubic-bezier(.22,1,.36,1)}
 .phone img{display:block;width:100%;height:auto;border-radius:25px}
+
+/* THE SIGNATURE MOMENT — the centre device tours the app as you scroll.
+   Frames are stacked and cross-faded. The FIRST frame is a normal in-flow image
+   so it sizes the box and stays visible with no JavaScript at all; the rest are
+   absolutely positioned on top of it and only ever become visible once the
+   Anime.js module has loaded and added .js-anime. */
+/* .frames is the shared box for the stack. Positioning the frames against the
+   FIGURE instead would resolve them against its padding box — making every
+   cross-faded frame 10px wider than the base one and jump on each transition. */
+.seq .frames{position:relative;display:block;line-height:0}
+.seq .frames img{position:absolute;inset:0;width:100%;height:auto;opacity:0;
+  transition:opacity .55s ease}
+.seq .frames img:first-child{position:relative;opacity:1}
+.js-anime .seq .frames img{opacity:0}
+.js-anime .seq .frames img.on{opacity:1}
+
 /* 3 x 40% = 120%, so the two overlaps have to reclaim 20% for the fan to sit inside
    its column without clipping. */
 .phone:nth-child(1){--tx:-6px; --ty:24px; --rot:-6deg; z-index:1}
@@ -658,10 +674,24 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
             srcset="assets/shots/kove/02-habits-720.webp 720w, assets/shots/kove/02-habits-1206.webp 1206w"
             sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
             alt="Kove's habit list, showing streaks of 50, 58 and 61 days with a week-at-a-glance strip under each one." /></figure>
-          <figure class="phone"><img src="assets/shots/kove/01-focus-home-1206.webp"
-            srcset="assets/shots/kove/01-focus-home-720.webp 720w, assets/shots/kove/01-focus-home-1206.webp 1206w"
-            sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
-            alt="Kove's home screen: a filled focus ring reading 60 minutes, two sessions, and a two-day streak." /></figure>
+          <figure class="phone seq" data-seq><span class="frames">
+            <img class="on" src="assets/shots/kove/01-focus-home-720.webp"
+              srcset="assets/shots/kove/01-focus-home-720.webp 620w, assets/shots/kove/01-focus-home-1206.webp 1206w"
+              sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
+              alt="Kove's home screen: a filled focus ring reading 60 minutes, two sessions, and a two-day streak." />
+            <img src="assets/shots/kove/02-habits-720.webp"
+              srcset="assets/shots/kove/02-habits-720.webp 620w, assets/shots/kove/02-habits-1206.webp 1206w"
+              sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
+              alt="Kove's habit list, showing streaks of 50, 58 and 61 days with a week-at-a-glance strip under each." />
+            <img src="assets/shots/kove/03-blocks-720.webp"
+              srcset="assets/shots/kove/03-blocks-720.webp 620w, assets/shots/kove/03-blocks-1206.webp 1206w"
+              sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
+              alt="Kove's blocks screen, with a Deep Work block active and shown as blocking now." />
+            <img src="assets/shots/kove/00-onboarding-720.webp"
+              srcset="assets/shots/kove/00-onboarding-720.webp 620w, assets/shots/kove/00-onboarding-1206.webp 1206w"
+              sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
+              alt="Kove's welcome screen: put the apps that pull you away behind a calm shield." />
+          </span></figure>
           <figure class="phone"><img src="assets/shots/kove/03-blocks-1206.webp"
             srcset="assets/shots/kove/03-blocks-720.webp 720w, assets/shots/kove/03-blocks-1206.webp 1206w"
             sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
@@ -687,10 +717,28 @@ footer .legal{color:rgba(245,248,252,.5);font-size:12.5px;margin-top:10px;line-h
             srcset="assets/shots/sail-suitely/02-guide-720.webp 720w, assets/shots/sail-suitely/02-guide-1206.webp 1206w"
             sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
             alt="Sail Suitely's north star guide, a night-sky screen grouping cruise lines into tiers." /></figure>
-          <figure class="phone"><img src="assets/shots/sail-suitely/01-home-1206.webp"
-            srcset="assets/shots/sail-suitely/01-home-720.webp 720w, assets/shots/sail-suitely/01-home-1206.webp 1206w"
-            sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
-            alt="Sail Suitely's home screen, with a featured sailing and a grid of ship-within-a-ship enclaves." /></figure>
+          <figure class="phone seq" data-seq><span class="frames">
+            <img class="on" src="assets/shots/sail-suitely/01-home-720.webp"
+              srcset="assets/shots/sail-suitely/01-home-720.webp 620w, assets/shots/sail-suitely/01-home-1206.webp 1206w"
+              sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
+              alt="Sail Suitely's home screen, with a featured sailing and a grid of ship-within-a-ship enclaves." />
+            <img src="assets/shots/sail-suitely/02-guide-720.webp"
+              srcset="assets/shots/sail-suitely/02-guide-720.webp 620w, assets/shots/sail-suitely/02-guide-1206.webp 1206w"
+              sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
+              alt="Sail Suitely's north star guide, a night-sky screen grouping cruise lines into tiers." />
+            <img src="assets/shots/sail-suitely/03-search-720.webp"
+              srcset="assets/shots/sail-suitely/03-search-720.webp 620w, assets/shots/sail-suitely/03-search-1206.webp 1206w"
+              sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
+              alt="Sail Suitely's search: 2,842 routes across 3,859 curated sailings, with luxury filters." />
+            <img src="assets/shots/sail-suitely/04-price-history-720.webp"
+              srcset="assets/shots/sail-suitely/04-price-history-720.webp 620w, assets/shots/sail-suitely/04-price-history-1206.webp 1206w"
+              sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
+              alt="A sailing's fare breakdown with a price-history chart tracking the suite fare over time." />
+            <img src="assets/shots/sail-suitely/05-detail-itinerary-720.webp"
+              srcset="assets/shots/sail-suitely/05-detail-itinerary-720.webp 620w, assets/shots/sail-suitely/05-detail-itinerary-1206.webp 1206w"
+              sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
+              alt="A sailing's full itinerary from Seattle through Alaska to Vancouver." />
+          </span></figure>
           <figure class="phone"><img src="assets/shots/sail-suitely/04-price-history-1206.webp"
             srcset="assets/shots/sail-suitely/04-price-history-720.webp 720w, assets/shots/sail-suitely/04-price-history-1206.webp 1206w"
             sizes="(max-width:900px) 38vw, 24vw" width="1206" height="2622" decoding="async"
@@ -1032,6 +1080,37 @@ if (!reduced.matches && fans.length) {
         leave: 'top+=40 bottom',
         sync: 0.35,
       }),
+    });
+
+    // The centre device tours the app. A scrubbed 0..1 drives which frame is shown,
+    // so scrolling back up walks the tour backwards rather than resetting it.
+    const seq = fan.querySelector('[data-seq]');
+    if (!seq) return;
+
+    const frames = [...seq.querySelectorAll('img')];
+    if (frames.length < 2) return;
+
+    const show = (i) => frames.forEach((f, n) => f.classList.toggle('on', n === i));
+    show(0);
+
+    const cursor = { p: 0 };
+    let shown = 0;
+
+    animate(cursor, {
+      p: [0, 1],
+      ease: 'linear',
+      autoplay: onScroll({
+        target: fan,
+        enter: 'bottom-=60 top',
+        leave: 'top+=60 bottom',
+        sync: 0.2,
+      }),
+      onUpdate: () => {
+        // clamp before indexing: sync easing can overshoot slightly past 0..1
+        const p = Math.min(0.9999, Math.max(0, cursor.p));
+        const i = Math.floor(p * frames.length);
+        if (i !== shown) { shown = i; show(i); }
+      },
     });
   });
 
