@@ -27,8 +27,19 @@ Two rules that bite most often:
 This page is owned by the **studio/LLC session**: entity facts, positioning, and the product cards.
 
 **Each app's own session owns its own page** (`3bears.studio/<app>/` and everything under it),
-because it can read the actual app code. The only handoff is that an app session reports its URL and
-the card here gets linked. Do not edit another app's page from here.
+because it can read the actual app code.
+
+**Clarified 2026-07-31 — the rule is about CROSS-APP edits, not about the studio session.**
+
+- ✅ The **studio/LLC session is the orchestrator** and may edit **any** app's page. It holds the
+  cross-cutting context (the standards doc, the shared API, the design systems), so shared work like
+  the waitlist form lands there rather than being re-explained to five sessions.
+- ✅ An app's own session may edit its own page.
+- 🚫 **One app's session must never touch another app's page.** The CoWatch session does not edit
+  Kove's site. That is the failure this rule exists to prevent.
+
+When the studio session does edit an app page, **commit and push before handing back**, so the app's
+own session never starts from a stale tree.
 
 ## Serving it locally
 
