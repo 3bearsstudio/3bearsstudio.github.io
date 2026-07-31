@@ -82,6 +82,41 @@ don't just lean. Only the hero accent uses it, but that is the most-looked-at ty
 `--display` in `:root` is the one place the font stack is defined; Georgia is the fallback because
 it is metrically close enough that a slow-connection swap doesn't badly reflow the page.
 
+## Claude Design — the design systems
+
+`tools/build-design-systems.py` generates the **design-system card bundles** that Claude Design
+(the separate `Design` app) attaches to anything it generates, so its output uses our real fonts
+and colours instead of inventing a look. **Six systems, 33 cards**, first published 2026-07-31:
+
+| System | Covers | Consistent with the others? |
+|---|---|---|
+| **3 Bears Studio** | this homepage **and every app page under the domain** | **Yes — it is one website** |
+| Kove · Sail Suitely · CoWatch · TouchPoint CRM · Bear Books | each app's own look | **No — they are different products** |
+
+That split is the point: the app *pages* are one site and must cohere; the *apps* should not look
+like each other.
+
+```bash
+python3 tools/build-design-systems.py     # -> build/design-systems/<slug>/*.html  (gitignored)
+```
+
+**Every token is read out of a real source file** — the script's docstring lists exactly which one
+per system, including `TimeOfDayPalette.swift` for Kove's four times of day and `Theme.swift` for
+Bear Books. It invents nothing. When a palette changes, re-run it and re-push; do not hand-edit a
+card.
+
+Publishing is done by Claude through the **DesignSync** tool, not by this script:
+`create_project` → `finalize_plan` (`writes: ["*.html"]`, `localDir` = that system's folder) →
+`write_files` → `register_assets`.
+
+Two traps, both hit on the first build:
+
+- **Font stacks in these cards use SINGLE quotes.** They get interpolated into `style="…"`
+  attributes, and a double quote ends the attribute early — silently dropping `font-size` and
+  everything after it. First build had every type specimen at the same size.
+- **Cards must render offline**, so Fraunces is inlined as a base64 data URI. That makes the type
+  card ~198 KB; `MAX_CARD_BYTES` fails the build before it reaches DesignSync's 256 KiB limit.
+
 ## Rules the page has to keep passing
 
 These are cheap to break and were each verified when last changed:
