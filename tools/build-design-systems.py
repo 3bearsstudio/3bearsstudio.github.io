@@ -14,13 +14,20 @@ This script generates those bundles from tokens that were READ OUT OF THE REAL
 SOURCE FILES (see SOURCES below) — it never invents a colour. Re-run it whenever
 a palette changes, then re-push with the DesignSync tool.
 
+It also emits, for each system, a PASTE BRIEF — `docs/design-briefs/<slug>.md`.
+The cards are the theme; the brief is the context the cards cannot carry (what
+the product is, the hex values as copyable text, the rules that must not be
+broken). Selecting the design system in Design's picker is the primary path;
+pasting the brief on top is what stops a session inventing the product.
+
 USAGE
 -----
-    python3 tools/build-design-systems.py [--out DIR]
+    python3 tools/build-design-systems.py [--out DIR] [--briefs DIR]
 
-Writes DIR/<system-slug>/... (default DIR = build/design-systems, gitignored).
-Prints a summary of every file written. No network access, no dependencies
-beyond the standard library.
+Writes DIR/<system-slug>/... (default DIR = build/design-systems, gitignored)
+and docs/design-briefs/<slug>.md (COMMITTED — a brief you cannot find is a brief
+nobody pastes). Prints a summary of every file written. No network access, no
+dependencies beyond the standard library.
 
 Then, to publish (Claude does this via the DesignSync tool, not this script):
     DesignSync create_project  -> projectId
@@ -93,6 +100,12 @@ class System:
     display_label: str
     body_stack: str = SANS
     body_label: str = "System sans (San Francisco / Segoe / Roboto)"
+    # One line of PRODUCT truth, lifted VERBATIM from that site's own
+    # <meta name="description">. It exists for the paste brief, not the cards: a
+    # design system carries the look and none of the story, and a Design session
+    # that does not know what the product IS will invent a plausible wrong one.
+    # Change it by changing the site's meta description, then re-running.
+    product: str = ""
     # Content
     colors: list[Swatch] = field(default_factory=list)
     colors_dark: list[Swatch] = field(default_factory=list)
@@ -115,6 +128,8 @@ STUDIO = System(
     slug="3-bears-studio",
     name="3 Bears Studio",
     tagline="The studio brand — 3bears.studio and every app page under it.",
+    product="3 Bears Studio LLC is a two-person studio building calm, "
+            "private-by-design apps for iPhone, Android and Mac.",
     page_bg="#070d1a", page_fg="#f5f8fc", muted="#8fa3bd", line="rgba(143,216,234,.22)",
     display_stack="'Fraunces', Georgia, 'Iowan Old Style', 'Times New Roman', serif",
     display_label='Fraunces (self-hosted, SIL OFL) — roman + TRUE italic',
@@ -155,6 +170,9 @@ KOVE = System(
     slug="kove",
     name="Kove",
     tagline="Calm focus, screen-time blocking and habits. Ocean at night.",
+    product="Kove blocks distracting apps for real, builds habits, and lets an "
+            "accountability partner see when you slip. Built private by design "
+            "by 3 Bears Studio LLC. In development for iPhone.",
     page_bg="#0b1426", page_fg="#eaf6fb", muted="#93aec4", line="rgba(143,216,234,.20)",
     display_stack=SANS, display_label="System sans — no display face; the imagery carries the brand",
     colors=[
@@ -198,6 +216,9 @@ SAIL = System(
     slug="sail-suitely",
     name="Sail Suitely",
     tagline="Luxury cruise discovery — suite classes and ultra-luxury lines.",
+    product="Sail Suitely surfaces the world's finest sailings — ship-within-a-ship "
+            "suite enclaves and ultra-luxury all-inclusive lines — and lets you "
+            "filter by what luxury cruisers actually care about. Coming soon to iPhone.",
     page_bg="#0A1730", page_fg="#F5F1E8", muted="rgba(245,241,232,.68)",
     line="rgba(209,173,102,.22)",
     display_stack="'Iowan Old Style', Georgia, 'Times New Roman', serif",
@@ -228,6 +249,9 @@ COWATCH = System(
     slug="cowatch",
     name="CoWatch",
     tagline="A shared film / TV / anime watchlist built for two people.",
+    product="CoWatch is the shared watch-tracker built for two. Match on what to "
+            "watch, follow each other's progress spoiler-safe, and never miss a "
+            "new episode. Coming soon to iPhone & Android.",
     page_bg="#0B0B11", page_fg="#F4F4F7", muted="#B4B4C2", line="#2A2A36",
     display_stack=SANS,
     display_label="System sans, heavy weights — the gradient wordmark is the brand mark",
@@ -263,6 +287,9 @@ TOUCHPOINT = System(
     slug="touchpoint-crm",
     name="TouchPoint CRM",
     tagline="Business-card scanning and follow-up tracking. Local-first.",
+    product="TouchPoint CRM helps you track every contact, log each touchpoint, and "
+            "always know who's due for a follow-up — with reminders, streaks, maps, "
+            "and one-tap business-card scanning. Local-first and private, by 3 Bears Studio.",
     page_bg="#FFFFFF", page_fg="#1A1C1E", muted="#545E6B", line="#E4E9F0",
     display_stack=SANS, display_label="System sans throughout — a working tool, not a brand piece",
     colors=[
@@ -304,6 +331,10 @@ BEARBOOKS = System(
     slug="bear-books",
     name="Bear Books",
     tagline="The studio's own bookkeeping Mac app. Internal, never marketed.",
+    # No public site, so no meta description to lift. Bear Books has no marketing
+    # surface — if that ever changes, this line comes from the new page, not from here.
+    product="Bear Books is the studio's own double-entry bookkeeping app for macOS. "
+            "Internal tooling — it has no public page and is not marketed.",
     page_bg="#0f1720", page_fg="#eef4fa", muted="#93a6bb", line="rgba(140,180,215,.22)",
     display_stack=SANS, display_label="System sans — a native macOS app, it should look native",
     colors=[
@@ -535,6 +566,81 @@ def card_overview(s: System, repo_root: Path) -> str:
     return shell(s, "Brand", "Overview", s.tagline, body, repo_root)
 
 
+def brief_md(s: System) -> str:
+    """A paste-ready brief for a Claude Design chat.
+
+    The published design system already carries colour, type and components as
+    rendered cards — selecting it in Design's picker is the primary path, and
+    this file does NOT replace that. It carries the three things a card bundle
+    cannot: what the product IS, the hex values as *text* (so a session that has
+    no picker, or a Claude Code session, still gets exact values), and the rules
+    that must not be broken. Paste it at the top of the chat.
+    """
+    def rows(sw: list[Swatch]) -> str:
+        return "\n".join(
+            f"| `{w.name}` | `{w.hex}` | {w.note or '—'} |" for w in sw)
+
+    parts = [
+        f"# {s.name} — design brief",
+        "",
+        "Paste this at the top of a Claude Design chat. **Also pick the "
+        f"`{s.name}` design system in Design's design-system picker** — that is "
+        "where the rendered colour, type and component cards live. This file adds "
+        "the product context and the hard rules, which cards cannot carry.",
+        "",
+        f"**What it is.** {s.product}",
+        "",
+        f"**Look in one line.** {s.tagline}",
+        "",
+        "## Type",
+        "",
+        f"- **Display / headings:** `{s.display_stack}`",
+        f"  - {s.display_label}",
+        f"- **Body:** `{s.body_stack}`",
+        f"  - {s.body_label}",
+        "",
+        "## Palette",
+        "",
+        "| Token | Hex | Used for |",
+        "|---|---|---|",
+        rows(s.colors),
+    ]
+    if s.colors_dark:
+        parts += ["", "### Dark mode (`prefers-color-scheme: dark`)", "",
+                  "| Token | Hex | Used for |", "|---|---|---|", rows(s.colors_dark)]
+    if s.gradients:
+        label = ("Time-of-day gradients — the app interpolates between these "
+                 "through the day" if s.slug == "kove" else "Gradients")
+        parts += ["", f"## {label}", ""]
+        parts += [f"- **{n}** — `{g}`" for n, g in s.gradients]
+    parts += ["", "## Surfaces", "",
+              f"- Page ground `{s.page_bg}`, text `{s.page_fg}`, "
+              f"muted `{s.muted}`, hairline `{s.line}`"]
+    if s.radii:
+        parts.append("- Radii: " + ", ".join(f"{k} `{v}`" for k, v in s.radii))
+    if s.button_primary[0]:
+        parts.append(f"- Primary button: `{s.button_primary[0]}` ground, "
+                     f"`{s.button_primary[1]}` label")
+    if s.button_secondary_border:
+        parts.append(f"- Secondary button: transparent, `{s.button_secondary_border}` border")
+    if s.shadow:
+        parts.append(f"- Shadow: `{s.shadow}`")
+    if s.notes:
+        parts += ["", "## Rules — not negotiable", ""]
+        parts += [f"- {n}" for n in s.notes]
+    parts += [
+        "",
+        "---",
+        "",
+        "Generated by `tools/build-design-systems.py` in the `3bears-studio-site` "
+        "repo, from the real source files listed in that script's docstring. "
+        "**Do not hand-edit this file** — change the source, then re-run. Every "
+        "value above is one the product actually uses; none was invented.",
+        "",
+    ]
+    return "\n".join(parts)
+
+
 def build(s: System, root: Path, repo_root: Path) -> list[tuple[str, str, str]]:
     """Write one system's cards. Returns (path, group, title) for registration."""
     d = root / s.slug
@@ -574,7 +680,11 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", default="build/design-systems",
-                    help="output directory (default: build/design-systems)")
+                    help="output directory for the cards (default: build/design-systems)")
+    ap.add_argument("--briefs", default="docs/design-briefs",
+                    help="output directory for the paste briefs "
+                         "(default: docs/design-briefs — this one IS committed, "
+                         "because a brief you cannot find is a brief nobody pastes)")
     args = ap.parse_args()
 
     repo_root = Path(__file__).resolve().parent.parent
@@ -583,6 +693,9 @@ def main() -> None:
         shutil.rmtree(root)
     root.mkdir(parents=True)
 
+    briefs = Path(args.briefs).resolve()
+    briefs.mkdir(parents=True, exist_ok=True)
+
     total = 0
     for s in SYSTEMS:
         made = build(s, root, repo_root)
@@ -590,7 +703,9 @@ def main() -> None:
         print(f"{s.name:<18} {len(made):>2} cards  ->  {root / s.slug}")
         for path, group, title in made:
             print(f"    [{group:<11}] {title:<22} {path}")
+        (briefs / f"{s.slug}.md").write_text(brief_md(s), encoding="utf-8")
     print(f"\n{total} cards across {len(SYSTEMS)} systems in {root}")
+    print(f"{len(SYSTEMS)} paste briefs in {briefs}")
 
 
 if __name__ == "__main__":

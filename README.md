@@ -109,7 +109,23 @@ like each other.
 
 ```bash
 python3 tools/build-design-systems.py     # -> build/design-systems/<slug>/*.html  (gitignored)
+                                          # -> docs/design-briefs/<slug>.md        (committed)
 ```
+
+### Using a system in a Claude Design chat
+
+Two halves, and you want both:
+
+1. **Pick the design system in Design's picker.** That is the theme — the rendered colour, type,
+   gradient and component cards. Each app is its own project (`Kove`, `Sail Suitely`, `CoWatch`,
+   `TouchPoint CRM`, `Bear Books`, `3 Bears Studio`), so pick the one you are designing for.
+2. **Paste `docs/design-briefs/<slug>.md` at the top of the chat.** The cards show the look but
+   cannot say *what the product is* or *what must never be shown*. Without it a session will
+   invent a plausible, wrong product — and for Kove, "invented" includes fake app screens and
+   privacy claims that are the opposite of true.
+
+The briefs are also the copy-paste source for a **Claude Code** session, which has no picker at
+all: the palette is a plain markdown table of hex values.
 
 **Every token is read out of a real source file** — the script's docstring lists exactly which one
 per system, including `TimeOfDayPalette.swift` for Kove's four times of day and `Theme.swift` for
