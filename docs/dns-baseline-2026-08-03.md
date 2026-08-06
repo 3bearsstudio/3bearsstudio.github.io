@@ -1,5 +1,25 @@
 # DNS baseline for `3bears.studio` — captured 2026-08-03, before the Workspace MX cutover
 
+> ## ✅ CUTOVER COMPLETED 2026-08-03 — verified against public DNS
+>
+> | Check | Result |
+> |---|---|
+> | `dig MX 3bears.studio` | `1 smtp.google.com.` |
+> | `dig TXT` | Google SPF + Google site-verification, **no Cloudflare records left** |
+> | `dig A` | all four GitHub Pages IPs intact |
+> | `curl https://3bears.studio` | **200** |
+> | `curl https://api.3bears.studio/health` | **`{"ok":true}`** |
+>
+> **The website and the waitlist API were completely unaffected** — checked, not assumed. MX/SPF/DKIM
+> records play no part in web traffic, which is why a mail cutover on a domain also serving a site is
+> safe *as long as you only touch mail records*.
+>
+> Record count went **12 → 7** (Cloudflare's five removed by the Disable action) **→ 9** (Google MX +
+> Google SPF added). Everything below is the pre-cutover state, kept as the rollback reference.
+>
+> **Still outstanding:** DKIM (generate in Admin console → Apps → Google Workspace → Gmail →
+> Authenticate email, publish as TXT) and DMARC. Do both before the first bulk send to the waitlist.
+
 **Why this file exists.** On 2026-08-03 the domain moved from Cloudflare Email Routing (forwarding)
 to Google Workspace (real mailboxes), which means **deleting and replacing the MX and mail-auth
 records**. This is the exact state of the zone immediately *before* that change — the thing to
