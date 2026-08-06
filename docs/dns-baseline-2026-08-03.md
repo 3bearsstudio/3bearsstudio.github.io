@@ -25,6 +25,27 @@ Captured from Cloudflare → 3bears.studio → DNS → Records. **12 of 200 reco
 | `cf2024-1._domainkey` | TXT | `v=DKIM1; h=sha256; …` | DNS only | Email Routing DKIM | ❌ → Google-generated DKIM |
 | `3bears.studio` | TXT | `google-site-verification=j6YgRMwExml6oKT4GTcZfAyXT7EtVEnpupumdGQPcXE` | DNS only | Workspace domain verification | ✅ keep |
 
+## The Email Routing rules being replaced (captured before disabling)
+
+All five forwarded into **`3bearsstudiollc@gmail.com`** (the studio gmail — *not*
+`philfritzy@gmail.com`). ~10 emails delivered in the 7 days before the cutover, so these were live,
+not dormant.
+
+| Address | Status | Becomes |
+|---|---|---|
+| `phil@3bears.studio` | Active | the **primary Workspace user** (the one paid seat) |
+| `hello@3bears.studio` | Active | free alias — **published on public pages + privacy policies** |
+| `support@3bears.studio` | Active | free alias — **App Store support contact** |
+| `kove@3bears.studio` | Active | free alias — waitlist replies |
+| `dani@3bears.studio` | Active | free alias **for now** — see the note below |
+| Catch-all | **Disabled** (action: Drop) | Workspace has no catch-all by default either — behaviour unchanged |
+
+⚠️ **`dani@` changes behaviour at the cutover.** It used to land in the *shared* studio gmail that
+both members could reach; as an alias on Phil's user it lands in **Phil's** inbox only. That is a
+deliberate cost decision (a real second user is $8.40/mo). Converting an alias to a real user later
+is trivial — delete the alias, create the user with the same address — so revisit it the moment
+Dani actually wants her own mailbox.
+
 ## 🚨 The two records that must never change
 
 1. **The four apex A records and the `www` CNAME must stay "DNS only" (grey cloud).** Proxying them
