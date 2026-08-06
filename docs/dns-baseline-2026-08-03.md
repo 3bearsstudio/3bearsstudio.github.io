@@ -17,6 +17,17 @@
 > Record count went **12 → 7** (Cloudflare's five removed by the Disable action) **→ 9** (Google MX +
 > Google SPF added). Everything below is the pre-cutover state, kept as the rollback reference.
 >
+> **✅ Live delivery test passed** — an external message from `philfritzy@gmail.com` to
+> `kove@3bears.studio` arrived in the `phil@3bears.studio` inbox in under a minute, tagged
+> *External*. That one test proves MX routing, external deliverability, and alias resolution
+> together. **Aliases created:** `hello@` · `support@` · `kove@` · `dani@` · `cowatch@` ·
+> `sailsuitely@` · `touchpoint@` (7 of the 30 free per user).
+>
+> ⚠️ **Gmail's "Turn on Gmail — Required" onboarding card was STALE** and appeared after activation
+> had already succeeded. Do not trust Google's setup checklists as a state signal — send a real
+> external email and watch it arrive. Same discipline as verifying a DB write against the table
+> rather than the response code.
+>
 > **Still outstanding:** DKIM (generate in Admin console → Apps → Google Workspace → Gmail →
 > Authenticate email, publish as TXT) and DMARC. Do both before the first bulk send to the waitlist.
 
