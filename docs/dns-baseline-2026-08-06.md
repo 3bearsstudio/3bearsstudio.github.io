@@ -1,6 +1,6 @@
-# DNS baseline for `3bears.studio` — captured 2026-08-03, before the Workspace MX cutover
+# DNS baseline for `3bears.studio` — captured 2026-08-06, before the Workspace MX cutover
 
-> ## ✅ CUTOVER COMPLETED 2026-08-03 — verified against public DNS
+> ## ✅ CUTOVER COMPLETED 2026-08-06 — verified against public DNS
 >
 > | Check | Result |
 > |---|---|
@@ -31,7 +31,7 @@
 > **Still outstanding:** DKIM (generate in Admin console → Apps → Google Workspace → Gmail →
 > Authenticate email, publish as TXT) and DMARC. Do both before the first bulk send to the waitlist.
 
-**Why this file exists.** On 2026-08-03 the domain moved from Cloudflare Email Routing (forwarding)
+**Why this file exists.** On 2026-08-06 the domain moved from Cloudflare Email Routing (forwarding)
 to Google Workspace (real mailboxes), which means **deleting and replacing the MX and mail-auth
 records**. This is the exact state of the zone immediately *before* that change — the thing to
 compare against if mail or the website breaks afterwards, and the thing to restore from if the
