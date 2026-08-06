@@ -1,0 +1,60 @@
+# DNS baseline for `3bears.studio` — captured 2026-08-03, before the Workspace MX cutover
+
+**Why this file exists.** On 2026-08-03 the domain moved from Cloudflare Email Routing (forwarding)
+to Google Workspace (real mailboxes), which means **deleting and replacing the MX and mail-auth
+records**. This is the exact state of the zone immediately *before* that change — the thing to
+compare against if mail or the website breaks afterwards, and the thing to restore from if the
+cutover has to be rolled back.
+
+Captured from Cloudflare → 3bears.studio → DNS → Records. **12 of 200 records used.**
+
+## The records, and which are load-bearing
+
+| Name | Type | Content | Proxy | Purpose | Survives the cutover? |
+|---|---|---|---|---|---|
+| `3bears.studio` | A | `185.199.111.153` | **DNS only** | GitHub Pages | ✅ do not touch |
+| `3bears.studio` | A | `185.199.108.153` | **DNS only** | GitHub Pages | ✅ do not touch |
+| `3bears.studio` | A | `185.199.109.153` | **DNS only** | GitHub Pages | ✅ do not touch |
+| `3bears.studio` | A | `185.199.110.153` | **DNS only** | GitHub Pages | ✅ do not touch |
+| `api.3bears.studio` | AAAA | `100::` | **Proxied** | waitlist Worker | ✅ do not touch |
+| `www.3bears.studio` | CNAME | `3bearsstudio.github.io` | **DNS only** | GitHub Pages | ✅ do not touch |
+| `3bears.studio` | MX | `route1.mx.cloudflare.net` | DNS only | Email Routing | ❌ replaced by Google's MX |
+| `3bears.studio` | MX | `route2.mx.cloudflare.net` | DNS only | Email Routing | ❌ replaced |
+| `3bears.studio` | MX | `route3.mx.cloudflare.net` | DNS only | Email Routing | ❌ replaced |
+| `3bears.studio` | TXT | `v=spf1 include:_spf.mx.cloudflare.net ~all` | DNS only | Email Routing SPF | ❌ → `include:_spf.google.com` |
+| `cf2024-1._domainkey` | TXT | `v=DKIM1; h=sha256; …` | DNS only | Email Routing DKIM | ❌ → Google-generated DKIM |
+| `3bears.studio` | TXT | `google-site-verification=j6YgRMwExml6oKT4GTcZfAyXT7EtVEnpupumdGQPcXE` | DNS only | Workspace domain verification | ✅ keep |
+
+## 🚨 The two records that must never change
+
+1. **The four apex A records and the `www` CNAME must stay "DNS only" (grey cloud).** Proxying them
+   breaks GitHub Pages' ability to issue the HTTPS certificate — for the studio homepage **and every
+   app page under the domain**.
+2. **`api` must stay Proxied (orange).** A Worker only intercepts proxied traffic; grey-clouding it
+   sends the waitlist endpoint to the IPv6 discard prefix and every signup fails.
+
+These two requirements are contradictory on one hostname, which is why the API lives on `api.` — see
+`~/appDevelopment/md/static-site-form-backend-cloudflare.md`.
+
+## Why the cutover order is forced
+
+The three MX records and the `cf2024-1._domainkey` TXT show a **🔒 padlock** in Cloudflare's UI:
+they are *managed by Email Routing* and cannot be edited or deleted while it is enabled. So:
+
+1. Verify the domain with Google (TXT) — done, safe, changes nothing
+2. **Disable Cloudflare Email Routing** — this unlocks the MX records **and kills every forward
+   (`hello@`, `support@`, `phil@`, `kove@`) instantly**
+3. Add Google's MX records
+4. Recreate all addresses as **aliases** on the single Workspace user (free, 30 per user) — NOT as
+   additional users, which are billable
+5. Then re-establish mail auth against Google: enable **DKIM** in Admin console (Apps → Google
+   Workspace → Gmail → Authenticate email), replace the **SPF** TXT with
+   `v=spf1 include:_spf.google.com ~all`, and add a **DMARC** record
+
+Steps 2–4 are the only window in which mail bounces. Keep it short.
+
+## Rollback
+
+To go back to forwarding: re-enable Cloudflare Email Routing (it re-creates its own MX/SPF/DKIM
+records automatically), delete Google's MX records, and recreate the four forwarding rules. The
+Google verification TXT is harmless to leave in place.
